@@ -1,0 +1,74 @@
+{
+  "name": "nginx-testing",
+  "version": "0.0.0",
+  "description": "Support for integration/acceptance testing of nginx configuration.",
+  "author": "Jakub Jirutka <jakub@jirutka.cz>",
+  "license": "MIT",
+  "homepage": "https://github.com/jirutka/nginx-testing",
+  "bugs": "https://github.com/jirutka/nginx-testing/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jirutka/nginx-testing.git"
+  },
+  "keywords": [
+    "nginx",
+    "njs",
+    "testing",
+    "test"
+  ],
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "files": [
+    "lib",
+    "src"
+  ],
+  "//": "directories.test is needed for power-assert",
+  "directories": {
+    "test": "src"
+  },
+  "scripts": {
+    "build": "tsc && rimraf lib/internal/*.d.ts*",
+    "clean": "rimraf lib/ node_modules/.cache",
+    "lint": "tsc --noEmit",
+    "prepublishOnly": "yarn build && asciidoctor -b docbook -a npm-readme -a gh-branch=v$npm_package_version -o - README.adoc | pandoc -f docbook -t gfm --base-header-level 2 -o README.md",
+    "test": "nyc mocha"
+  },
+  "engines": {
+    "node": ">= 14.0.0"
+  },
+  "dependencies": {
+    "@logdna/tail-file": "^2.0.3",
+    "anylogger": "^1.0.9",
+    "execa": "^5.0.0",
+    "get-port": "^5.1.1",
+    "nginx-binaries": "^0.3.1",
+    "nginx-conf": "^1.6.0",
+    "stream-buffers": "^3.0.2"
+  },
+  "devDependencies": {
+    "@types/dedent": "~0.7.0",
+    "@types/mocha": "~8.2.0",
+    "@types/mocha-each": "~2.0.0",
+    "@types/node": "~14.14.14",
+    "@types/node-fetch": "~2.5.7",
+    "@types/power-assert": "~1.5.3",
+    "@types/stream-buffers": "~3.0.3",
+    "@types/which": "~2.0.0",
+    "anylogger-loglevel": "~1.0.0",
+    "dedent": "~0.7.0",
+    "espower-typescript": "~9.0.2",
+    "loglevel": "~1.7.1",
+    "mocha": "~8.2.1",
+    "mocha-each": "~2.0.1",
+    "node-fetch": "~2.6.1",
+    "nyc": "~15.1.0",
+    "power-assert": "~1.6.1",
+    "rimraf": "~3.0.2",
+    "source-map-support": "~0.5.19",
+    "tiny-typed-emitter": "~2.0.3",
+    "ts-mockito": "~2.6.1",
+    "typescript": "~4.1.3",
+    "wait-for-expect": "~3.0.2",
+    "which": "~2.0.2"
+  }
+}

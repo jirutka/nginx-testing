@@ -1,0 +1,8 @@
+#!/usr/bin/env node
+
+console.error(`\
+nginx version: nginx/1.18.0
+built with OpenSSL 1.1.1i  8 Dec 2020
+TLS SNI support enabled
+configure arguments: --prefix=. --sbin-path=nginx --conf-path=nginx.conf --pid-path=nginx.pid --lock-path=nginx.lock --error-log-path=stderr --http-log-path=access.log --http-client-body-temp-path=client_body_temp --http-proxy-temp-path=proxy_temp --user=nginx --group=nginx --with-ld-opt=-static --with-debug --with-threads --with-file-aio --with-http_ssl_module --with-http_realip_module --with-http_geoip_module=dynamic --without-http_fastcgi_module --without-http_scgi_module --add-module=njs-0.5.0/nginx --add-module=ngx_devel_kit-0.3.1 --add-module=echo-nginx-module-0.62 --add-module=headers-more-nginx-module-0.33 --add-module=set-misc-nginx-module-0.32
+`)

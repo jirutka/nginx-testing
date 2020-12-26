@@ -1,0 +1,68 @@
+name: CI
+on:
+  - push
+
+jobs:
+  test:
+    name: "Test (Node ${{ matrix.node-version }} on ${{ matrix.os }})"
+    strategy:
+      matrix:
+        os:
+          - ubuntu-20.04
+          - macos-latest
+          - windows-latest
+        node-version:
+          - 14
+          - 15
+        experimental: [false]
+        include:
+          - { os: ubuntu-18.04, node-version: 14, experimental: false }
+          - { os: ubuntu-16.04, node-version: 14, experimental: false }
+    continue-on-error: ${{ matrix.experimental }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - if: startsWith(matrix.os, 'ubuntu')
+        run: sudo apt-get install nginx-light
+
+      - if: startsWith(matrix.os, 'macos')
+        run: brew install nginx
+
+      - if: startsWith(matrix.os, 'windows')
+        uses: engineerd/configurator@v0.0.5
+        with:
+          name: nginx.exe
+          url: http://nginx.org/download/nginx-1.18.0.zip
+          pathInArchive: nginx-1.18.0/nginx.exe
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - run: yarn install
+      - run: yarn build
+      - run: yarn test
+
+  publish:
+    name: Publish to npmjs
+    needs: [test]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+
+      - run: sudo apt-get install asciidoctor pandoc
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 14
+          registry-url: https://registry.npmjs.org
+
+      - run: yarn install
+      - run: yarn build
+
+      - run: yarn publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
