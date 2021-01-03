@@ -321,7 +321,10 @@ export async function startNginx (opts: NginxOptions): Promise<NginxServer> {
     let accessLogTail: TailFile | undefined
     let accessLogBuffer: WritableStreamBuffer | undefined
     if (accessLog !== 'ignore') {
-      accessLogTail = new TailFile(path.join(workDir, 'access.log'), { pollFileIntervalMs: 10 })
+      accessLogTail = new TailFile(path.join(workDir, 'access.log'), {
+        pollFileIntervalMs: 10,
+        startPos: null,  // start from EOF
+      })
       accessLogTail.pipe(accessLog === 'buffer'
         ? (accessLogBuffer = new WritableStreamBuffer())
         : accessLog
