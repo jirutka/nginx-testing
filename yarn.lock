@@ -1552,10 +1552,10 @@ next-tick@~1.0.0:
   resolved "https://registry.yarnpkg.com/next-tick/-/next-tick-1.0.0.tgz#ca86d1fe8828169b0120208e3dc8424b9db8342c"
   integrity sha1-yobR/ogoFpsBICCOPchCS524NCw=
 
-nginx-binaries@^0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/nginx-binaries/-/nginx-binaries-0.3.0.tgz#e15882b1c8c2a359f96cf05c5efe77cdfcfdfd48"
-  integrity sha512-CRZsTGr8i3kcUJjoB3LMAWbf9+742l1XXF652k5tXBPxa+6BB3nvh9+66JKokpzFzRqU/xKA8I5kty69c8vZFA==
+nginx-binaries@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/nginx-binaries/-/nginx-binaries-0.4.0.tgz#7a998d2febf5b25c52f9a18e4801123eda980e5f"
+  integrity sha512-dWd6uQ4AqQURc1y1xJLvrvbwBQyTZr3z7UYMnN7QqJh+J6Yu5STUj56eVpZ0exMQzdSkDKmcpv3rFeiJpEMncQ==
   dependencies:
     anylogger "^1.0.9"
     node-fetch "^2.6.1"
