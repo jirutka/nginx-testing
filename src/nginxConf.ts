@@ -1,5 +1,6 @@
 import { strict as assert } from 'assert'
-import { ConfItem, NginxConfFile } from 'nginx-conf'
+import { NginxConfFile } from 'nginx-conf'
+import type { NginxConfItem as ConfItem } from 'nginx-conf/dist/src/conf'
 
 
 /**
@@ -80,7 +81,12 @@ export function parseConf (source: string): NginxConfEditor {
 const nginxConfEditor = (conf: NginxConfFile): NginxConfEditor => ({
   get (path) {
     const item = get(conf.nginx, path)
-    return Array.isArray(item) ? item.map(x => x._value) : item?._value
+    // `_value` is always string in nginx-conf 2.0.0, but its type is declared as
+    // `string | number`, so we convert it to string to be sure...
+    return item == null ? item
+      : Array.isArray(item) ? item.map(({ _value }) => _value == null ? _value : String(_value))
+      : item._value == null ? undefined
+      : String(item._value)
   },
   applyPatch (patch) {
     for (const op of patch) {
@@ -98,13 +104,17 @@ function applyOperation (confRoot: ConfItem, operation: PatchOperation): void {
   const itemName = splitPath.pop()!
   const parentPath = splitPath.join('/')
 
-  const parent: ConfItem | undefined = get(confRoot, parentPath)
+  let parent: ConfItem | ConfItem[] | undefined = get(confRoot, parentPath)
   if (!parent) {
     if (operation.op !== 'remove') {
       throw RangeError(`Directive at ${parentPath} does not exist`)
     }
     return
   }
+  if (Array.isArray(parent)) {
+    parent = parent[0]!
+  }
+
   switch (operation.op) {
     case 'add':
       parent._add(itemName, operation.value)
@@ -126,7 +136,7 @@ function applyOperation (confRoot: ConfItem, operation: PatchOperation): void {
   }
 }
 
-function get (confRoot: ConfItem, path: string): ConfItem | undefined {
+function get (confRoot: ConfItem, path: string): ConfItem | ConfItem[] | undefined {
   const pointer = path?.split('/')
   if (!pointer || pointer[0] !== '') {
     throw Error(`Invalid JSON pointer: ${path}`)
@@ -136,19 +146,14 @@ function get (confRoot: ConfItem, path: string): ConfItem | undefined {
     return confRoot
   }
 
-  for (let i = 1, item: ConfItem | undefined = confRoot; i < len; i++) {
+  for (let i = 1, item: ConfItem | ConfItem[] | undefined = confRoot; i < len; i++) {
     const p = pointer[i]!
     // This is a hacky workaround.
     // TODO: Remove after https://github.com/tmont/nginx-conf/pull/27 is merged.
-    if (!(p in item)) {
-      if (p === '0') {
-        continue
-      }
-      if (!/d+/.test(p) && typeof item[0] === 'object') {
-        item = item[0]
-      }
+    if (Array.isArray(item) && !/\d+/.test(p)) {
+      item = item[0]
     }
-    item = item[p]
+    item = (item as any)?.[p]
     if (i === len - 1) {
       return item
     }

@@ -1561,10 +1561,10 @@ nginx-binaries@^0.4.0:
     node-fetch "^2.6.1"
     semver "^7.3.4"
 
-nginx-conf@^1.6.0:
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/nginx-conf/-/nginx-conf-1.6.0.tgz#1feb61c2cd22c29d2b56decef6c2e838cd5bb9e3"
-  integrity sha512-Q6/2xnyeo/bIiN+nv57D8Xq/s1c90jUNnNvjHSV4FqqxMpTGY0u+exLkxDHNpXuYfoCxyA02p5hHj5vLIIWUmg==
+nginx-conf@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/nginx-conf/-/nginx-conf-2.0.0.tgz#a14a150ab1850b10691a50eff613cdef85f564b4"
+  integrity sha512-fHA8qHPW5FclhUJZUt4MO7E8P6Hg6jHb77I9yAjj18gYtOR4ubxonS1XlUoVMhopFggVSMP79BYc6V3i7H+k4Q==
 
 node-fetch@^2.6.1, node-fetch@~2.6.1:
   version "2.6.1"

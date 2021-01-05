@@ -40,7 +40,8 @@ describe('parseConf', () => {
 
   describe('.get', () => {
     ([/* path                     | expected         */
-      ['/daemon'                  , 'on'             ],
+      ['/daemon'                  , ['on']           ],
+      ['/daemon/0'                , 'on'             ],
       ['/http/0/server/0/listen/0', '80'             ],
       ['/http/server/0/listen/0'  , '80'             ],
       ['/http/server/0/listen'    , ['80', '[::]:80']],
@@ -70,7 +71,7 @@ describe('parseConf', () => {
       ;(['add', 'default', 'set'] as const).forEach(op => {
         test(`op: '${op}' - adds a new new directive`, () => {
           editor.applyPatch([{ path, op, value: newValue }])
-          assert.deepEqual(editor.get(path), newValue)
+          assert.deepEqual(editor.get(path), [newValue])
         })
       })
       testRemove(path)
@@ -83,8 +84,8 @@ describe('parseConf', () => {
 
       ;([/* op    |  desc                        | expected            */
         ['add'    , 'adds a new directive'       , [curValue, newValue]],
-        ['default', 'does not change anything'   , curValue            ],
-        ['set'    , 'replaces existing directive', newValue            ],
+        ['default', 'does not change anything'   , [curValue]          ],
+        ['set'    , 'replaces existing directive', [newValue]          ],
       ] as const).forEach(([op, desc, expected]) => {
         test(`op: '${op}' - ${desc}`, () => {
           editor.applyPatch([{ path, op, value: newValue }])
@@ -102,7 +103,7 @@ describe('parseConf', () => {
       ;([/* op    |  desc                        | expected              */
         ['add'    , 'adds a new directive'       , [...curValue, newValue]],
         ['default', 'does not change anything'   , curValue               ],
-        ['set'    , 'replaces existing directive', newValue               ],
+        ['set'    , 'replaces existing directive', [newValue]             ],
       ] as const).forEach(([op, msg, expected]) => {
         test(`op: '${op}' - ${msg}`, () => {
           editor.applyPatch([{ path, op, value: newValue }])
