@@ -323,10 +323,7 @@ export async function startNginx (opts: NginxOptions): Promise<NginxServer> {
     if (accessLog !== 'ignore') {
       const accessLogPath = path.join(workDir, 'access.log')
 
-      accessLogTail = new TailFile(accessLogPath, {
-        pollFileIntervalMs: 10,
-        startPos: null,  // start from EOF
-      })
+      accessLogTail = new TailFile(accessLogPath, { pollFileIntervalMs: 10 })
       accessLogTail.pipe(accessLog === 'buffer'
         ? (accessLogBuffer = new WritableStreamBuffer())
         : accessLog
@@ -334,6 +331,9 @@ export async function startNginx (opts: NginxOptions): Promise<NginxServer> {
       log.debug(`Begins polling of ${accessLogPath}`)
       await accessLogTail.start()
 
+      // TailFile startPos from EOF doesn't work reliably, so better to remove
+      // the file to avoid reading old logs on next run.
+      onCleanup(() => FS.rmSync(accessLogPath))
       onCleanup(async () => await accessLogTail!.quit())
     }
 
