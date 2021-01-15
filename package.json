@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "@logdna/tail-file": "^2.0.3",
-    "anylogger": "^1.0.9",
+    "anylogger": "^1.0.10",
     "execa": "^5.0.0",
     "get-port": "^5.1.1",
     "nginx-binaries": "^0.5.0",

@@ -337,11 +337,6 @@ anylogger@^1.0.10, anylogger@^1.0.3:
   resolved "https://registry.yarnpkg.com/anylogger/-/anylogger-1.0.10.tgz#0a2df51403ecf76d58aec80579ce3e7514cae164"
   integrity sha512-iZsA9nnDpeS6A19W6LcOKqAxk2pbc93rOl4KnfOItmqdvVktv1rNqqOsY7I2j8wjt0slmGnInapKnfmKAifFDw==
 
-anylogger@^1.0.9:
-  version "1.0.9"
-  resolved "https://registry.yarnpkg.com/anylogger/-/anylogger-1.0.9.tgz#94e8cdd0fca8d976f005d46b4a0490da8344e3da"
-  integrity sha512-0dBWCjGzCbptcdKwGd2vHE5AGi44wIPSOWULwfqeUaoxs/YKQoMrpOeMBw5mh5fbmoXnTIxWhtGSclTdnC2VYQ==
-
 anymatch@~3.1.1:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/anymatch/-/anymatch-3.1.1.tgz#c55ecf02185e2469259399310c173ce31233b142"
