@@ -1,6 +1,6 @@
 {
   "name": "nginx-testing",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Support for integration/acceptance testing of nginx configuration.",
   "author": "Jakub Jirutka <jakub@jirutka.cz>",
   "license": "MIT",
