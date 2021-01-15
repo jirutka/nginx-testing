@@ -41,7 +41,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - run: yarn install
+      - run: yarn install --frozen-lockfile
       - run: yarn build
       - run: yarn test
 
@@ -60,7 +60,7 @@ jobs:
           node-version: 14
           registry-url: https://registry.npmjs.org
 
-      - run: yarn install
+      - run: yarn install --frozen-lockfile
       - run: yarn build
 
       - run: yarn publish
