@@ -332,7 +332,7 @@ anylogger-loglevel@~1.0.0:
     anylogger "^1.0.3"
     loglevel "^1.6.8"
 
-anylogger@^1.0.3:
+anylogger@^1.0.10, anylogger@^1.0.3:
   version "1.0.10"
   resolved "https://registry.yarnpkg.com/anylogger/-/anylogger-1.0.10.tgz#0a2df51403ecf76d58aec80579ce3e7514cae164"
   integrity sha512-iZsA9nnDpeS6A19W6LcOKqAxk2pbc93rOl4KnfOItmqdvVktv1rNqqOsY7I2j8wjt0slmGnInapKnfmKAifFDw==
@@ -1552,12 +1552,12 @@ next-tick@~1.0.0:
   resolved "https://registry.yarnpkg.com/next-tick/-/next-tick-1.0.0.tgz#ca86d1fe8828169b0120208e3dc8424b9db8342c"
   integrity sha1-yobR/ogoFpsBICCOPchCS524NCw=
 
-nginx-binaries@^0.4.0:
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/nginx-binaries/-/nginx-binaries-0.4.0.tgz#7a998d2febf5b25c52f9a18e4801123eda980e5f"
-  integrity sha512-dWd6uQ4AqQURc1y1xJLvrvbwBQyTZr3z7UYMnN7QqJh+J6Yu5STUj56eVpZ0exMQzdSkDKmcpv3rFeiJpEMncQ==
+nginx-binaries@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/nginx-binaries/-/nginx-binaries-0.5.0.tgz#87a10d7d5287adea8cf5622f67394e9ff82c9278"
+  integrity sha512-DDUvwRThM9ptVESFNlWgDBbuHeekCV6E4jWvY1bj6kctWHs35T3cbb5PSOt/krUq3m5gj7RHAj5Eq6yaqec79Q==
   dependencies:
-    anylogger "^1.0.9"
+    anylogger "^1.0.10"
     node-fetch "^2.6.1"
     semver "^7.3.4"
 
