@@ -1,7 +1,7 @@
-import getPort from 'get-port'
-import http from 'http'
+import * as getPort from 'get-port'
+import * as http from 'http'
 import { beforeEach, describe, test } from 'mocha'
-import net from 'net'
+import * as net from 'net'
 
 import '../../test/helper'
 import { isCloseTo } from '../../test/utils'

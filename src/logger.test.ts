@@ -1,7 +1,7 @@
 import type AnyLoggerModule from 'anylogger'
 import debug from 'debug'
 import { beforeEach, describe, test } from 'mocha'
-import proxyquire from 'proxyquire'
+import * as proxyquire from 'proxyquire'
 import { reset, spy, verify } from 'ts-mockito'
 
 import '../test/helper'

@@ -1,9 +1,9 @@
 import { AssertionError } from 'assert'
-import dedent from 'dedent'
+import * as dedent from 'dedent'
 import { afterEach, describe, test } from 'mocha'
 import { NginxBinary } from 'nginx-binaries'
 import fetch from 'node-fetch'
-import OS from 'os'
+import * as OS from 'os'
 import { anything, spy, reset, when } from 'ts-mockito'
 import { sync as which } from 'which'
 

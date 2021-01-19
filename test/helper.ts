@@ -1,4 +1,4 @@
-import powerAssert from 'power-assert'
+import * as powerAssert from 'power-assert'
 
 declare global {
   const assert: typeof powerAssert.strict

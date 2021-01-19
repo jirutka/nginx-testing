@@ -1,4 +1,4 @@
-import FS from 'fs'
+import * as FS from 'fs'
 import { describe, test } from 'mocha'
 import { basename, dirname, join as joinPath } from 'path'
 
