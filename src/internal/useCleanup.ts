@@ -1,7 +1,5 @@
-import AnyLogger from 'anylogger'
+import { log } from '../logger'
 
-
-const log = AnyLogger('nginx-testing:cleanup')
 
 type UseCleanup = [
   onCleanup: (fn: () => Promise<void> | void) => void,

@@ -1,8 +1,7 @@
-import AnyLogger from 'anylogger'
 import http from 'http'
 
+import { log } from '../logger'
 
-const log = AnyLogger('nginx-testing:utils')
 
 type RequestOptions = Omit<http.RequestOptions, 'timeout' | 'createConnection'>
 

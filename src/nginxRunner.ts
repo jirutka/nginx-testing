@@ -1,4 +1,3 @@
-import AnyLogger from 'anylogger'
 import path from 'path'
 import type { Writable } from 'stream'
 
@@ -12,11 +11,10 @@ import * as FS from './internal/fs'
 import { useCleanup } from './internal/useCleanup'
 import { createTempDir } from './internal/tempDir'
 import { waitForHttpPortOpen } from './internal/waitForHttpPortOpen'
+import { log as defaultLogger } from './logger'
 import { parseConf, PatchOperation } from './nginxConf'
 import { nginxVersionInfo, NginxVersionInfo } from './nginxVersionInfo'
 
-
-const defaultLogger = AnyLogger('nginx-testing')
 
 type ConfigPatch = Array<PatchOperation & { ifModule?: string }>
 

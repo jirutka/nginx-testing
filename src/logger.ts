@@ -1,5 +1,6 @@
 import type { BaseLogger as AnyLogger } from 'anylogger'
 import type { Debugger } from 'debug'
+import * as nginxBinaries from 'nginx-binaries'
 
 
 type Logger = Pick<Console, typeof logLevels[number]>
@@ -20,6 +21,7 @@ export function setLogger (logger: Partial<Logger>) {
   for (const level of logLevels) {
     log[level] = logger[level] || noop
   }
+  nginxBinaries.setLogger(logger)
 }
 
 // NOTE: We cannot use dynamic `import()` because we don't have guarantee that

@@ -1,8 +1,7 @@
-import AnyLogger from 'anylogger'
 import execa from 'execa'
 
+import { log } from './logger'
 
-const log = AnyLogger('nginx-testing')
 
 /**
  * Parsed output of `nginx -V` returned from {@link nginxVersionInfo}.
