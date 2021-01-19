@@ -11,7 +11,7 @@ import * as FS from './internal/fs'
 import { useCleanup } from './internal/useCleanup'
 import { createTempDir } from './internal/tempDir'
 import { waitForHttpPortOpen } from './internal/waitForHttpPortOpen'
-import { log as defaultLogger } from './logger'
+import { log } from './logger'
 import { parseConf, PatchOperation } from './nginxConf'
 import { nginxVersionInfo, NginxVersionInfo } from './nginxVersionInfo'
 
@@ -145,18 +145,7 @@ interface BaseOptions {
    * Defaults to `1000`.
    */
   startTimeoutMsec?: number
-  /**
-   * The logger to use for the runner logging. It must be an object with functions:
-   * `debug`, `info`, `warn`, and `error`. You can use even global `console` as the
-   * logger.
-   *
-   * Defaults to [anylogger](https://github.com/download/anylogger) with logger name
-   * `'nginx-testing'`.
-   */
-  logger?: Logger
 }
-
-type Logger = Pick<Console, 'debug' | 'info' | 'warn' | 'error'>
 
 type RequiredKeys<O extends object, K extends keyof O = keyof O> = O & {
   [L in K]-?: O[L]
@@ -235,7 +224,6 @@ export async function startNginx (opts: NginxOptions): Promise<NginxServer> {
     accessLog = 'buffer',
     bindAddress = '127.0.0.1',
     errorLog = 'buffer',
-    logger: log = defaultLogger,
     preferredPorts = [],
     startTimeoutMsec = 1_000,
   } = opts
