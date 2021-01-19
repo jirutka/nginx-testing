@@ -71,12 +71,9 @@
     "forceConsistentCasingInFileNames": true, /* Disallow inconsistently-cased references to the same file. */
     "stripInternal": true,                    /* Do not emit declarations for code that has an '@internal' annotation. */
   },
-  "include": [
-    "src/",
-  ],
-  // Don't output transpiled tests into the outDir.
   "exclude": [
-    "**/*.test.ts",
+    "lib/",
+    "node_modules/",
   ],
   // This is used for running tests.
   "ts-node": {

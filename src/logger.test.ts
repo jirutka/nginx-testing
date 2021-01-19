@@ -105,7 +105,7 @@ test('setLogger', () => {
   setLogger(logger)
 
   for (const level of logLevels) {
-    assert(log[level] === logger[level] || noop,
+    assert(log[level] === (logger as any)[level] || noop,
       `Expected log.${level} to be the provided logging function or no-op if not provided.`)
   }
 })

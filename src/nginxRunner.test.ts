@@ -1,6 +1,5 @@
 import { AssertionError } from 'assert'
 import dedent from 'dedent'
-import FS from 'fs'
 import { afterEach, describe, test } from 'mocha'
 import { NginxBinary } from 'nginx-binaries'
 import fetch from 'node-fetch'
@@ -52,10 +51,10 @@ describe('startNginx', function () {
         this.timeout(120_000)
 
         if (version === 'system') {
-          binPath = which(process.env.NGINX_BIN || 'nginx', { nothrow: true })
+          binPath = which(process.env.NGINX_BIN || 'nginx', { nothrow: true }) as string
           if (!binPath) {
             console.warn('nginx not found, skipping tests with system-provided nginx')
-            return this.skip()
+            this.skip()
           }
         } else {
           binPath = await NginxBinary.download({ version })
@@ -133,7 +132,7 @@ describe('startNginx', function () {
               // XXX: If running on Windows and assert didn't pass within 1 sec,
               //      mark the test as skipped.
               if (OS.platform() === 'win32') {
-                console.warn(`WARN: Ignoring failure of test '${this.test.title}' on win32.`)
+                console.warn(`WARN: Ignoring failure of test '${this.test!.title}' on win32.`)
                 this.skip()
               }
               throw err
@@ -205,14 +204,14 @@ describe('adjustConfig', () => {
   test('does not add directives for unavailable modules', () => {
     const patch = configPatch.filter(x => x.ifModule)
     const modules = patch.reduce<NginxVersionInfo['modules']>(
-      (acc, { ifModule  }) => (acc[ifModule] = 'without', acc),
+      (acc, { ifModule  }) => (acc[ifModule!] = 'without', acc),
       {},
     )
     const result = adjustConfig(minimalConfig, { modules, ports, workDir })
 
     for (const { path } of patch) {
       const directive = path.split('/').pop()
-      assert(!result.includes(directive), 'Expected this directive to not be added.')
+      assert(!result.includes(directive!), 'Expected this directive to not be added.')
     }
   })
 

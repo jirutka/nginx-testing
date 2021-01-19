@@ -35,7 +35,7 @@ export async function retryUntilTimeout (
   } catch (err) {
     if (onErrorAfterTimeout && err instanceof AssertionError) {
       onErrorAfterTimeout(err)
-      return
+      return {}
     }
     throw err
   }
