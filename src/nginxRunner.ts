@@ -111,8 +111,10 @@ interface BaseOptions {
    * Path of a directory that will be passed as a _prefix_ (`-p`) into `nginx`.
    * It will be automatically created if doesn't exist.
    *
-   * If not provided, an unique temporary directory in the OS' default temp directory
-   * (see `os.tmpdir()`) will be created and automatically deleted after stopping.
+   * If not provided, an unique temporary directory will be created:
+   * `.cache/nginx-testing-XXXXXX/` relative to the nearest writable `node_modules`
+   * (nearest to `process.cwd()`) or `nginx-testing-XXXXXX/` in the system-preferred
+   * temp directory. The created directory will be automatically deleted after stopping.
    */
   workDir?: string
   /**
