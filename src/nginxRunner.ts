@@ -93,14 +93,22 @@ interface BaseOptions {
    */
   bindAddress?: string
   /**
-   * A list of preferred port numbers to use for nginx.
+   * A list of port numbers for substituting `__PORT__`, `__PORT_1__`, ..., `__PORT_9__`
+   * placeholders in the given nginx config. Unlike `preferredPorts`, these are _not_
+   * checked for availability and nginx will fail to start if any of the provided and
+   * used ports is unavailable.
+   *
+   * If it's not provided or more ports are needed, next ports are selected from the
+   * `preferredPorts` or randomly.
+   */
+  ports?: number[],
+  /**
+   * A list of preferred port numbers to use for substituting `__PORT__`, `__PORT_1__`,
+   * ..., `__PORT_9__` placeholders in the given nginx config.
    *
    * Unavailable ports (used by some other program or restricted by OS) are skipped.
    * If there are no preferred ports left and another port is needed, a random port
    * number is used.
-   *
-   * These ports are used to substitute `__PORT__`, `__PORT_1__`, ..., `__PORT_9__`
-   * placeholders in the given nginx config.
    */
   preferredPorts?: number[]
   /**
@@ -226,6 +234,7 @@ export async function startNginx (opts: NginxOptions): Promise<NginxServer> {
     accessLog = 'buffer',
     bindAddress = '127.0.0.1',
     errorLog = 'buffer',
+    ports = [],
     preferredPorts = [],
     startTimeoutMsec = 1_000,
   } = opts
@@ -252,11 +261,14 @@ export async function startNginx (opts: NginxOptions): Promise<NginxServer> {
 
     let config = opts.config ?? await FS.readFile(opts.configPath!, 'utf8')
 
-    const portsCount = countNeededPorts(config)
-    if (portsCount < 1 && preferredPorts.length < 1) {
-      throw Error('No __PORT__ placeholder found in nginx config and option preferredPorts is empty')
+    let portsCount = countNeededPorts(config)
+    if (portsCount === 0 && ports.length === 0 && preferredPorts.length === 0) {
+      throw Error('No __PORT__ placeholder found in nginx config and options ports and preferredPorts are empty')
     }
-    const ports = await getFreePorts(bindAddress, portsCount || 1, preferredPorts)
+    portsCount ||= 1
+    if (ports.length < portsCount) {
+      ports.push(...await getFreePorts(bindAddress, portsCount - ports.length, preferredPorts))
+    }
 
     config = adjustConfig(config, { ...versionInfo, ports, workDir })
 
