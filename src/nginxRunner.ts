@@ -364,7 +364,7 @@ const portPlaceholderRx = /\b__PORT(?:_(\d))?__\b/g
 
 function countNeededPorts (config: string): number {
   const portIndexes = Array.from(config.matchAll(portPlaceholderRx), ([_, n]) => Number(n || 0))
-  return Math.max(...portIndexes) + 1
+  return Math.max(...portIndexes, -1) + 1
 }
 
 async function getFreePorts (address: string, count: number, preferred: number[] = []): Promise<number[]> {
