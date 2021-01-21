@@ -148,8 +148,7 @@ function get (confRoot: ConfItem, path: string): ConfItem | ConfItem[] | undefin
 
   for (let i = 1, item: ConfItem | ConfItem[] | undefined = confRoot; i < len; i++) {
     const p = pointer[i]!
-    // This is a hacky workaround.
-    // TODO: Remove after https://github.com/tmont/nginx-conf/pull/27 is merged.
+
     if (Array.isArray(item) && !/\d+/.test(p)) {
       item = item[0]
     }
