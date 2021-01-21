@@ -16,9 +16,13 @@
     "testing",
     "test"
   ],
+  "bin": {
+    "start-nginx": "bin/start-nginx"
+  },
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "files": [
+    "bin",
     "lib",
     "src"
   ],
@@ -40,13 +44,16 @@
     "@logdna/tail-file": "^2.0.4",
     "execa": "^5.0.0",
     "get-port": "^5.1.1",
+    "minimist": "^1.2.5",
     "nginx-binaries": "^0.6.1",
     "nginx-conf": "^2.0.0",
+    "node-watch": "^0.7.1",
     "stream-buffers": "^3.0.2"
   },
   "devDependencies": {
     "@types/debug": "~4.1.5",
     "@types/dedent": "~0.7.0",
+    "@types/minimist": "~1.2.1",
     "@types/mocha": "~8.2.0",
     "@types/mocha-each": "~2.0.0",
     "@types/node": "~14.14.14",
