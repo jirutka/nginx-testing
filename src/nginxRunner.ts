@@ -248,6 +248,8 @@ export async function startNginx (opts: NginxOptions): Promise<NginxServer> {
       ? await NginxBinary.download({ version: opts.version })
       : (opts.binPath || 'nginx')
 
+    const versionInfo = await nginxVersionInfo(binPath)
+
     // Prepare config
 
     let config = opts.config ?? await FS.readFile(opts.configPath!, 'utf8')
@@ -256,8 +258,7 @@ export async function startNginx (opts: NginxOptions): Promise<NginxServer> {
     if (portsCount < 1 && preferredPorts.length < 1) {
       throw Error('No __PORT__ placeholder found in nginx config and option preferredPorts is empty')
     }
-    const versionInfo = await nginxVersionInfo(binPath)
-    const ports = await getFreePorts(bindAddress, countNeededPorts(config) || 1, preferredPorts)
+    const ports = await getFreePorts(bindAddress, portsCount || 1, preferredPorts)
 
     config = adjustConfig(config, { ...versionInfo, ports, workDir })
 

@@ -144,8 +144,10 @@ describe('startNginx', function () {
   })
 
   test('rejects if the config does not contain any __PORT__ and preferredPorts is undef/empty', async () => {
+    const binPath = `${__dirname}/../test/fixtures/nginxV`
+
     try {
-      nginx = await startNginx({ binPath: 'anything', config: 'daemon off;', preferredPorts: [] })
+      nginx = await startNginx({ binPath, config: 'daemon off;', preferredPorts: [] })
     } catch (err) {
       return assert(err.message.includes('No __PORT__ placeholder found'))
     }
