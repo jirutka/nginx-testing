@@ -1,7 +1,7 @@
 import * as path from 'path'
 import type { Writable } from 'stream'
 
-import * as TailFileModule from '@logdna/tail-file'
+import * as TailFile from '@logdna/tail-file'
 import * as execa from 'execa'
 import * as getPort from 'get-port'
 import { NginxBinary } from 'nginx-binaries'
@@ -15,10 +15,6 @@ import { log } from './logger'
 import { parseConf, PatchOperation } from './nginxConf'
 import { nginxVersionInfo, NginxVersionInfo } from './nginxVersionInfo'
 
-
-// TODO: Remove after https://github.com/logdna/tail-file-node/pull/14 is released.
-const TailFile = TailFileModule as any as typeof TailFileModule.default
-type TailFile = TailFileModule.default
 
 type ConfigPatch = Array<PatchOperation & { ifModule?: string }>
 

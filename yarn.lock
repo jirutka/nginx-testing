@@ -192,10 +192,10 @@
   resolved "https://registry.yarnpkg.com/@istanbuljs/schema/-/schema-0.1.2.tgz#26520bf09abe4a5644cd5414e37125a8954241dd"
   integrity sha512-tsAQNx32a8CoFhjhijUIhI4kccIAgmGhy8LZMZgGfmXcpMbPRUqn5LWmgRttILi6yeGmBJd2xsPkFMs0PzgPCw==
 
-"@logdna/tail-file@^2.0.3":
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/@logdna/tail-file/-/tail-file-2.0.3.tgz#ffb4c8516bc05d70fb8d20bd1373db7304c623b6"
-  integrity sha512-fxWf7lLOftIhxrzohYqC1nQfBQrIgzTpUOTT3lZLDQi/t/nA0vRN5bz2QPhqagur2cDSHSlKzrsBSodJs4AGkw==
+"@logdna/tail-file@^2.0.4":
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/@logdna/tail-file/-/tail-file-2.0.4.tgz#be17a04e465719ff563bad79a6d46377d7708c1b"
+  integrity sha512-vVZB6qxpWyqMT8kN/+YPBQZ95FobuIyB0olb5IIwTBwUAU8oETZvNTeAPrzAzHwlEPkxWyzMrrVD04J0HCp0Bw==
 
 "@types/debug@~4.1.5":
   version "4.1.5"

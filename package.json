@@ -37,7 +37,7 @@
     "node": ">= 14.0.0"
   },
   "dependencies": {
-    "@logdna/tail-file": "^2.0.3",
+    "@logdna/tail-file": "^2.0.4",
     "execa": "^5.0.0",
     "get-port": "^5.1.1",
     "nginx-binaries": "^0.6.1",
