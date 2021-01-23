@@ -272,11 +272,11 @@ export async function startNginx (opts: NginxOptions): Promise<NginxServer> {
       ports.push(...await getFreePorts(bindAddress, portsCount - ports.length, preferredPorts))
     }
 
-    config = adjustConfig(config, { ...versionInfo, bindAddress, ports, workDir })
-
     const configPath = opts.configPath
       ? tempConfigPath(opts.configPath)
       : path.join(workDir, 'nginx.conf')
+
+    config = adjustConfig(config, { ...versionInfo, bindAddress, configPath, ports, workDir })
 
     log.debug(`Writing config to ${configPath}:\n-----BEGIN CONFIG-----\n${config}\n-----END CONFIG-----`)
     await FS.writeFile(configPath, config, 'utf8')
@@ -391,17 +391,19 @@ async function getFreePorts (address: string, count: number, preferred: number[]
 
 type ConfigParams = {
   bindAddress: string,
+  configPath: string,
   ports: ReadonlyArray<number>,
   workDir: string,
   modules: NginxVersionInfo['modules'],
 }
 
-function adjustConfig (config: string, { bindAddress, modules, ports, workDir }: ConfigParams): string {
+function adjustConfig (config: string, { bindAddress, configPath, modules, ports, workDir }: ConfigParams): string {
   const placeholders: Record<string, string> = {
     ADDRESS: bindAddress,
     // nginx requires forward slashes even on Windows.
+    CONFDIR: unixPath(path.dirname(configPath)),
     CWD: unixPath(process.cwd()),
-    WORKDIR: unixPath(workDir)
+    WORKDIR: unixPath(workDir),
   }
   config = config
     .replace(portPlaceholderRx, (match, idx) => ports[Number(idx) || 0]?.toString() ?? match)

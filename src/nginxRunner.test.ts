@@ -4,6 +4,7 @@ import { afterEach, describe, test } from 'mocha'
 import { NginxBinary } from 'nginx-binaries'
 import fetch from 'node-fetch'
 import * as OS from 'os'
+import * as path from 'path'
 import { anything, spy, reset, when } from 'ts-mockito'
 import { sync as which } from 'which'
 
@@ -88,6 +89,7 @@ describe('startNginx', function () {
           const expected = adjustConfig(config, {
             ...versionInfo,
             bindAddress: '127.0.0.1',
+            configPath: nginx.workDir,
             ports: nginx.ports,
             workDir: nginx.workDir,
           })
@@ -182,6 +184,7 @@ describe('adjustConfig', () => {
   `
   const params = {
     bindAddress: '127.0.0.2',
+    configPath: '/home/joe/project/nginx.conf',
     modules: {},
     ports: [8080],
     workDir: '/tmp/nginx-testing',
@@ -262,13 +265,14 @@ describe('adjustConfig', () => {
   })
 
   test('replaces placeholders with the given params', () => {
-    const { bindAddress, workDir } = params
+    const { bindAddress, configPath, workDir } = params
     const ports = [8080, 8081, 8090]
     const input = dedent`
       http {
         roota __WORKDIR__;
         rootb __WORKDIR__/root;
-        rootc __CWD__;
+        rootc __CONFDIR__;
+        rootd __CWD__;
         listen0a __PORT__;
         listen0b __ADDRESS__:__PORT__;
         listen0c 127.0.0.1:__PORT__;
@@ -280,7 +284,8 @@ describe('adjustConfig', () => {
     const expectedLines = [
       `roota ${workDir};`,
       `rootb ${workDir}/root;`,
-      `rootc ${process.cwd().replace(/\\/g, '/')}`,
+      `rootc ${path.dirname(configPath)};`,
+      `rootd ${process.cwd().replace(/\\/g, '/')}`,
       `listen0a ${ports[0]};`,
       `listen0b ${bindAddress}:${ports[0]};`,
       `listen0c 127.0.0.1:${ports[0]};`,
