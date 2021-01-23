@@ -308,9 +308,9 @@ export async function startNginx (opts: NginxOptions): Promise<NginxServer> {
 
     // If nginx cannot be executed, e.g. invalid path, we want to fail fast
     // and throw a relevant error.
-    await new Promise((resolve, reject) => {
+    await new Promise<void>((resolve, reject) => {
       ngxProcess.once('error', reject)
-      setTimeout(resolve, 50)  // sleep up to 50 ms
+      setTimeout(() => (ngxProcess.removeListener('error', reject), resolve()), 50)  // sleep up to 50 ms
     })
 
     if (!await waitForHttpPortOpen({ hostname: bindAddress, port: ports[0] }, startTimeoutMsec)) {
