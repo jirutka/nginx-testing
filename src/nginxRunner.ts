@@ -400,6 +400,7 @@ function adjustConfig (config: string, { bindAddress, modules, ports, workDir }:
   config = config
     .replace(/\b__ADDRESS__\b/g, bindAddress)
     // nginx requires forward slashes even on Windows.
+    .replace(/\b__CWD__\b/g, process.cwd().replace(/\\/g, '/'))
     .replace(/\b__WORKDIR__\b/g, workDir.replace(/\\/g, '/'))
     .replace(portPlaceholderRx, (match, idx) => ports[Number(idx) || 0]?.toString() ?? match)
 

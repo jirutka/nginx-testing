@@ -268,6 +268,7 @@ describe('adjustConfig', () => {
       http {
         roota __WORKDIR__;
         rootb __WORKDIR__/root;
+        rootc __CWD__;
         listen0a __PORT__;
         listen0b __ADDRESS__:__PORT__;
         listen0c 127.0.0.1:__PORT__;
@@ -279,6 +280,7 @@ describe('adjustConfig', () => {
     const expectedLines = [
       `roota ${workDir};`,
       `rootb ${workDir}/root;`,
+      `rootc ${process.cwd().replace(/\\/g, '/')}`,
       `listen0a ${ports[0]};`,
       `listen0b ${bindAddress}:${ports[0]};`,
       `listen0c 127.0.0.1:${ports[0]};`,
