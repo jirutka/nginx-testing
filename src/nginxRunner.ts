@@ -343,7 +343,7 @@ export async function startNginx (opts: NginxOptions): Promise<NginxServer> {
     // Return
 
     return {
-      get config () { return config },
+      config,
       pid: ngxProcess.pid,
       ports,
       port: ports[0]!,
