@@ -397,12 +397,15 @@ type ConfigParams = {
 }
 
 function adjustConfig (config: string, { bindAddress, modules, ports, workDir }: ConfigParams): string {
-  config = config
-    .replace(/\b__ADDRESS__\b/g, bindAddress)
+  const placeholders: Record<string, string> = {
+    ADDRESS: bindAddress,
     // nginx requires forward slashes even on Windows.
-    .replace(/\b__CWD__\b/g, process.cwd().replace(/\\/g, '/'))
-    .replace(/\b__WORKDIR__\b/g, workDir.replace(/\\/g, '/'))
+    CWD: unixPath(process.cwd()),
+    WORKDIR: unixPath(workDir)
+  }
+  config = config
     .replace(portPlaceholderRx, (match, idx) => ports[Number(idx) || 0]?.toString() ?? match)
+    .replace(/\b__([A-Z_]+)__\b/g, (match, name) => placeholders[name] ?? match)
 
   const patch = configPatch.filter(({ ifModule }) => {
     return !ifModule || modules[ifModule] !== 'without' && modules[ifModule] !== 'with-dynamic'
@@ -412,6 +415,8 @@ function adjustConfig (config: string, { bindAddress, modules, ports, workDir }:
   }
   return config
 }
+
+const unixPath = (filepath: string) => filepath.replace(/\\/g, '/')
 
 function tempConfigPath (filepath: string): string {
   return path.join(path.dirname(path.resolve(filepath)), `.${path.basename(filepath)}~`)
