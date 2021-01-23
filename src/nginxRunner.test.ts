@@ -264,42 +264,33 @@ describe('adjustConfig', () => {
       "Expected 'demon' and 'pid' to be overridden, 'access_log' added and the rest kept as-is.")
   })
 
-  test('replaces placeholders with the given params', () => {
+  describe('replaces placeholders with the given params', () => {
     const { bindAddress, configPath, workDir } = params
     const ports = [8080, 8081, 8090]
-    const input = dedent`
-      http {
-        roota __WORKDIR__;
-        rootb __WORKDIR__/root;
-        rootc __CONFDIR__;
-        rootd __CWD__;
-        listen0a __PORT__;
-        listen0b __ADDRESS__:__PORT__;
-        listen0c 127.0.0.1:__PORT__;
-        listen0d __PORT_0__;
-        listen1 __PORT_1__;
-        listen2 __PORT_2__;
-      }
-    `
-    const expectedLines = [
-      `roota ${workDir};`,
-      `rootb ${workDir}/root;`,
-      `rootc ${path.dirname(configPath)};`,
-      `rootd ${process.cwd().replace(/\\/g, '/')}`,
-      `listen0a ${ports[0]};`,
-      `listen0b ${bindAddress}:${ports[0]};`,
-      `listen0c 127.0.0.1:${ports[0]};`,
-      `listen0d ${ports[0]};`,
-      `listen1 ${ports[1]};`,
-      `listen2 ${ports[2]};`,
-    ]
 
-    const actual = adjustConfig(input, { ...params, ports })
+    ;([/* placeholder           | expected                         */
+      ['__ADDRESS__:__PORT__'   , `${bindAddress}:${ports[0]}`     ],
+      ['__CONFDIR__'            , path.dirname(configPath)         ],
+      ['__CWD__'                , process.cwd().replace(/\\/g, '/')],
+      ['__WORKDIR__'            , workDir                          ],
+      ['__WORKDIR__/__WORKDIR__', `${workDir}/${workDir}`          ],
+      ['__WORKDIR__/root'       , `${workDir}/root`                ],
+      ['__PORT__'               , ports[0]                         ],
+      ['127.0.0.1:__PORT__'     , `127.0.0.1:${ports[0]}`          ],
+      ['__PORT_0__'             , ports[0]                         ],
+      ['__PORT_1__'             , ports[1]                         ],
+      ['__PORT_2__'             , ports[2]                         ],
+    ] as const).forEach(([placeholder, expected]) => {
+      test(placeholder, () => {
+        const input = dedent`
+          http {
+            directive ${placeholder};
+          }
+        `
+        const parameters = { ...params, ports }
 
-    assert(!actual.match(/__\w+__/), 'Expected all the placeholders to be replaced.')
-
-    for (const expectedLine of expectedLines) {
-      assert(actual.includes(expectedLine))
-    }
+        assert(adjustConfig(input, parameters).includes(`directive ${expected};`))
+      })
+    })
   })
 })
