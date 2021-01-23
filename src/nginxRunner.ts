@@ -89,7 +89,9 @@ interface BaseOptions {
    */
   configPath?: string
   /**
-   * Hostname or IP address to bind the port(s) on. Defaults to `'127.0.0.1'`.
+   * Hostname or IP address the port(s) will be binding on. This is used when searching
+   * for free ports (see `preferredPorts`) and for substituting `__ADDRESS__` placeholder
+   * in the given nginx config. Defaults to `'127.0.0.1'`.
    */
   bindAddress?: string
   /**
@@ -270,7 +272,7 @@ export async function startNginx (opts: NginxOptions): Promise<NginxServer> {
       ports.push(...await getFreePorts(bindAddress, portsCount - ports.length, preferredPorts))
     }
 
-    config = adjustConfig(config, { ...versionInfo, ports, workDir })
+    config = adjustConfig(config, { ...versionInfo, bindAddress, ports, workDir })
 
     const configPath = opts.configPath
       ? tempConfigPath(opts.configPath)
@@ -388,13 +390,15 @@ async function getFreePorts (address: string, count: number, preferred: number[]
 }
 
 type ConfigParams = {
+  bindAddress: string,
   ports: ReadonlyArray<number>,
   workDir: string,
   modules: NginxVersionInfo['modules'],
 }
 
-function adjustConfig (config: string, { modules, ports, workDir }: ConfigParams): string {
+function adjustConfig (config: string, { bindAddress, modules, ports, workDir }: ConfigParams): string {
   config = config
+    .replace(/\b__ADDRESS__\b/g, bindAddress)
     // nginx requires forward slashes even on Windows.
     .replace(/\b__WORKDIR__\b/g, workDir.replace(/\\/g, '/'))
     .replace(portPlaceholderRx, (match, idx) => ports[Number(idx) || 0]?.toString() ?? match)

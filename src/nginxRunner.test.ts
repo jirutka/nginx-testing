@@ -27,7 +27,7 @@ describe('startNginx', function () {
     }
     http {
       server {
-        listen 127.0.0.1:__PORT__;
+        listen __ADDRESS__:__PORT__;
         root __WORKDIR__;
 
         location /test {
@@ -85,7 +85,12 @@ describe('startNginx', function () {
 
         test('.config', async () => {
           const versionInfo = await nginxVersionInfo(binPath)
-          const expected = adjustConfig(config, { ...versionInfo, ports: nginx.ports, workDir: nginx.workDir })
+          const expected = adjustConfig(config, {
+            ...versionInfo,
+            bindAddress: '127.0.0.1',
+            ports: nginx.ports,
+            workDir: nginx.workDir,
+          })
 
           assert.equal(nginx.config, expected,
             'Expected the .config to be the same as the input config transformed by adjustConfig().')
@@ -175,8 +180,12 @@ describe('adjustConfig', () => {
       }
     }
   `
-  const ports = [8080]
-  const workDir = '/tmp/nginx-testing'
+  const params = {
+    bindAddress: '127.0.0.2',
+    modules: {},
+    ports: [8080],
+    workDir: '/tmp/nginx-testing',
+  }
 
   test('adds directives for compatibility with nginx-testing', () => {
     const expected = dedent`
@@ -198,7 +207,7 @@ describe('adjustConfig', () => {
     master_process off;
     error_log stderr info;
     `
-    const actual = adjustConfig(minimalConfig, { modules: {}, ports, workDir }).trim()
+    const actual = adjustConfig(minimalConfig, params).trim()
 
     assert.equal(actual, expected)
   })
@@ -209,7 +218,7 @@ describe('adjustConfig', () => {
       (acc, { ifModule  }) => (acc[ifModule!] = 'without', acc),
       {},
     )
-    const result = adjustConfig(minimalConfig, { modules, ports, workDir })
+    const result = adjustConfig(minimalConfig, { ...params, modules })
 
     for (const { path } of patch) {
       const directive = path.split('/').pop()
@@ -246,21 +255,23 @@ describe('adjustConfig', () => {
       daemon off;
       pid nginx.pid;
     `
-    const actual = adjustConfig(input, { modules: {}, ports, workDir }).trim()
+    const actual = adjustConfig(input, params).trim()
 
     assert.equal(actual, expected,
       "Expected 'demon' and 'pid' to be overridden, 'access_log' added and the rest kept as-is.")
   })
 
   test('replaces placeholders with the given params', () => {
+    const { bindAddress, workDir } = params
     const ports = [8080, 8081, 8090]
     const input = dedent`
       http {
         roota __WORKDIR__;
         rootb __WORKDIR__/root;
         listen0a __PORT__;
-        listen0b 127.0.0.1:__PORT__;
-        listen0c __PORT_0__;
+        listen0b __ADDRESS__:__PORT__;
+        listen0c 127.0.0.1:__PORT__;
+        listen0d __PORT_0__;
         listen1 __PORT_1__;
         listen2 __PORT_2__;
       }
@@ -269,13 +280,14 @@ describe('adjustConfig', () => {
       `roota ${workDir};`,
       `rootb ${workDir}/root;`,
       `listen0a ${ports[0]};`,
-      `listen0b 127.0.0.1:${ports[0]};`,
-      `listen0c ${ports[0]};`,
+      `listen0b ${bindAddress}:${ports[0]};`,
+      `listen0c 127.0.0.1:${ports[0]};`,
+      `listen0d ${ports[0]};`,
       `listen1 ${ports[1]};`,
       `listen2 ${ports[2]};`,
     ]
 
-    const actual = adjustConfig(input, { modules: {}, ports, workDir })
+    const actual = adjustConfig(input, { ...params, ports })
 
     assert(!actual.match(/__\w+__/), 'Expected all the placeholders to be replaced.')
 
