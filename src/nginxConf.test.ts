@@ -52,6 +52,11 @@ describe('parseConf', () => {
         assert.deepEqual(editor.get(path), expected)
       })
     })
+
+    test('invalid JSON pointer', () => {
+      const path = 'missing/leading/slash'
+      assert.throws(() => editor.get(path), /Invalid JSON pointer:/)
+    })
   })
 
   describe('.applyPatch', () => {
