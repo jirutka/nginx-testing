@@ -32,11 +32,8 @@ export type ModuleFlag = 'with' | 'with-dynamic' | 'without'
  */
 export async function nginxVersionInfo (nginxBinPath: string): Promise<NginxVersionInfo> {
   log.debug(`Executing '${nginxBinPath} -V'`)
-  const { stderr, exitCode } = await execa(nginxBinPath, ['-V'], { timeout: 500 })
+  const { stderr } = await execa(nginxBinPath, ['-V'], { timeout: 500 })
 
-  if (exitCode > 0) {
-    throw Error(`'${nginxBinPath} -V' failed with code ${exitCode}: ${stderr}`)
-  }
   log.debug(`nginx -V: ${stderr}`)
 
   return parseOutput(stderr)

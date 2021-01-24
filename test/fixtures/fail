@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+
+console.error('This is error output')
+process.exit(1)

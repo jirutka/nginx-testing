@@ -19,4 +19,13 @@ describe('nginxVersionInfo', function () {
       http_ssl: 'with',
     }, 'Expected --with and --without flags for modules to be correctly parsed.')
   })
+
+  test('when `<nginxPath> -V` exits with non-zero status', async () => {
+    const binPath = `${__dirname}/../test/fixtures/fail`
+
+    try { await nginxVersionInfo(binPath) } catch (err) {
+      return assert(err.message === `Command failed with exit code 1: ${binPath} -V\nThis is error output`)
+    }
+    assert.fail('The function should throw, rather than completing.')
+  })
 })
