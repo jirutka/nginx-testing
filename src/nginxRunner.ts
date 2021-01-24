@@ -3,6 +3,7 @@ import type { Writable } from 'stream'
 
 import * as TailFile from '@logdna/tail-file'
 import * as execa from 'execa'
+import type { ExecaChildProcess } from 'execa'
 import * as getPort from 'get-port'
 import { NginxBinary } from 'nginx-binaries'
 import { WritableStreamBuffer } from 'stream-buffers'
@@ -303,19 +304,23 @@ export async function startNginx (opts: NginxOptions): Promise<NginxServer> {
       errorLogBuffer = new WritableStreamBuffer()
       ngxProcess.stderr!.pipe(errorLogBuffer)
     }
+    const dumpErrorLog = () => {
+      const msg = errorLogBuffer?.getContentsAsString()
+      msg && log.error(msg)
+    }
 
     // Check if running
 
-    // If nginx cannot be executed, e.g. invalid path, we want to fail fast
-    // and throw a relevant error.
-    await new Promise<void>((resolve, reject) => {
-      ngxProcess.once('error', reject)
-      setTimeout(() => (ngxProcess.removeListener('error', reject), resolve()), 50)  // sleep up to 50 ms
-    })
+    // Wait up to 50 ms for an error and continue if no error appeared.
+    // If nginx cannot be executed, e.g. invalid path, we want to fail fast,
+    // dump error log and throw a relevant error.
+    try { await waitForProcessError(ngxProcess, 50) } catch (err) {
+      dumpErrorLog()
+      throw err
+    }
 
     if (!await waitForHttpPortOpen({ hostname: bindAddress, port: ports[0] }, startTimeoutMsec)) {
-      const msg = errorLogBuffer?.getContentsAsString()
-      msg && log.error(msg)
+      dumpErrorLog()
       throw Error(`Failed to start nginx, no response on port ${ports[0]}`)
     }
 
@@ -423,6 +428,15 @@ const unixPath = (filepath: string) => filepath.replace(/\\/g, '/')
 function tempConfigPath (filepath: string): string {
   return path.join(path.dirname(path.resolve(filepath)), `.${path.basename(filepath)}~`)
 }
+
+const waitForProcessError = (process: ExecaChildProcess, timeout: number) => new Promise<void>((resolve, reject) => {
+  process.once('error', reject)
+
+  setTimeout(() => {
+    process.removeListener('error', reject)
+    resolve()
+  }, timeout)
+})
 
 /** @internal */
 export const __testing = {
