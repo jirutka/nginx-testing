@@ -3,8 +3,9 @@ import { NginxConfFile } from 'nginx-conf'
 import type { NginxConfItem as ConfItem } from 'nginx-conf/dist/src/conf'
 
 
+// NOTE: Keep in sync with API section in README.adoc (until I figure out how to generate it).
 /**
- * Nginx configuration editor returned from {@link parseConf}.
+ * Nginx configuration editor returned by {@link parseConf}.
  */
 export interface NginxConfEditor {
   /**
@@ -33,6 +34,7 @@ export interface NginxConfEditor {
   toString (): string
 }
 
+// NOTE: Keep in sync with API section in README.adoc (until I figure out how to generate it).
 /**
  * A patch operation to be performed on nginx config.
  *

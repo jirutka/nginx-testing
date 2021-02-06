@@ -86,6 +86,275 @@ http {
 ----
 
 
+== API
+:Writable: link:https://nodejs.org/api/stream.html#stream_class_stream_writable[stream.Writable]
+
+// NOTE: Keep the API section in sync with TSDoc comments in the sources (until I figure out how to generate it).
+
+// Pandoc conversion to Markdown doesn't handle definition lists.
+ifdef::npm-readme[]
+https://github.com/{gh-name}#api[See on GitHub].
+
+endif::npm-readme[]
+ifndef::npm-readme[]
+
+[[startNginx]] startNginx `(opts: <<NginxOptions>>) => Promise<<<NginxServer>>>`::
+Starts nginx server with the given configuration.
++
+.Example:
+[source, ts]
+----
+import { startNginx, NginxProcess } from 'nginx-testing'
+import fetch from 'node-fetch'
+
+let nginx: NginxProcess
+
+before(async () => {
+  nginx = await startNginx({ version: '1.18.x', configPath: './nginx.conf' })
+})
+after(nginx.stop)
+
+test('GET / results in HTTP 200', async () => {
+  const resp = await fetch(`http://localhost:${nginx.port}/`)
+  assert(resp.status === 200)
+})
+----
+
+[[nginxVersionInfo]] nginxVersionInfo `(nginxBinPath: string) => Promise<<<NginxVersionInfo>>>`::
+Executes the nginx binary `nginxBinPath` with option `-V` and returns parsed version and info about the modules it was compiled with(out).
+
+[[parseConf]] parseConf `(source: string) => <<NginxConfEditor>>`::
+Parses the given nginx config.
+
+[[setLogger]] setLogger `(logger: object) => void`::
+Use the given logger -- an object with functions `debug`, `info`, `warn`, and `error`.
+Undefined logging functions will be replaced with no-op.
++
+See section <<Logging>> for more information.
+
+
+=== NginxOptions
+
+Options for <<startNginx, `startNginx()`>>.
+
+binPath `(?string)`::
+Name or path of the nginx binary to start.
+Defaults to `'nginx'`.
++
+This option is ignored if `version` is provided.
+
+version `(?string)`::
+A SemVer version range specifying the nginx version to run.
++
+Nginx binary for your OS and architecture will be downloaded from https://github.com/jirutka/nginx-binaries[nginx-binaries].
+It will be stored in directory `.cache/nginx-binaries/` inside the nearest writeable `node_modules` directory or in `nginx-binaries/` inside the system-preferred temp directory.
++
+Not all versions are available.
+You can find a list of available binaries at https://jirutka.github.io/nginx-binaries/[nginx-binaries].
+
+config `(?string)`::
+Nginx configuration to use.
++
+If `configPath` is provided, the processed config will be written to a temporary file `.<filename>~` (where `<filename>` is a filename from `configPath`) in the `configPath`’s directory (e.g. `conf/nginx.conf` -> `conf/.nginx.conf~`).
+Otherwise it will be written into `nginx.conf` file in `workDir`.
+In either case, this file will be automatically deleted after stopping the nginx.
++
+Either `configPath`, or `config` must be provided!
+
+configPath `(?string)`::
+Path of the nginx configuration file to use.
++
+This file will be processed and the resulting config file will be written to a temporary file `.<filename>~` (where `<filename>` is a filename from `configPath`) in the `configPath`’s directory (e.g. `conf/nginx.conf` -> `conf/.nginx.conf~`).
+This temporary file will be automatically deleted after stopping the nginx.
++
+Either `configPath`, or `config` must be provided!
+
+bindAddress `(?string)`::
+Hostname or IP address the port(s) will be binding on.
+This is used when searching for free ports (see `preferredPorts`) and for substituting `++__ADDRESS__++` placeholder in the given nginx config.
+Defaults to `'127.0.0.1'`.
+
+ports `(?number[])`::
+A list of port numbers for substituting `++__PORT__++`, `++__PORT_1__++`, ..., `++__PORT_9__++` placeholders in the given nginx config.
+Unlike `preferredPorts`, these are _not_ checked for availability and nginx will fail to start if any of the provided and used ports is unavailable.
++
+If it’s not provided or more ports are needed, next ports are selected from the `preferredPorts` or randomly.
+
+preferredPorts `(?number[])`::
+A list of preferred port numbers to use for substituting `++__PORT__++`, `++__PORT_1__++`, ..., `++__PORT_9__++` placeholders in the given nginx config.
++
+Unavailable ports (used by some other program or restricted by OS) are skipped.
+If there are no preferred ports left and another port is needed, a random port number is used.
+
+workDir `(?string)`::
+Path of a directory that will be passed as a _prefix_ (`-p`) into `nginx`.
+It will be automatically created if doesn’t exist.
++
+If not provided, an unique temporary directory will be created: `.cache/nginx-testing-XXXXXX/` relative to the nearest writable `node_modules` (nearest to `process.cwd()`) or `nginx-testing-XXXXXX/` in the system-preferred temp directory.
+The created directory will be automatically deleted after stopping.
+
+errorLog `(?string | ?{Writable})`::
++
+--
+One of:
+
+* `'buffer'` -- Collect the nginx’s stderr to a buffer that can be read using `readErrorLog()` (default).
+* `'ignore'` -- Ignore nginx’s stderr.
+* `'inherit'` -- Pass through the nginx’s stderr output to the Node process.
+* `<{Writable}>` -- A writable stream to pipe the nginx’s stderr to.
+
+Nginx error log is expected to be redirected to _stderr_.
+Directive `error_log stderr info;` will be automatically added to the config, unless there’s already `error_log` defined in the main context.
+--
+
+accessLog `(?string | ?{Writable})`::
++
+--
+One of:
+
+* `'buffer'` -- Collect the nginx’s access log to a buffer that can be read using `readAccessLog()` (default).
+* `'ignore'` -- Ignore nginx’s access log.
+* `<{Writable}>` -- A writable stream to pipe the nginx’s access log to.
+
+Nginx access log is expected to be redirected to file `<workDir>/access.log`.
+Directive `access_log access.log;` will be automatically added to the config, unless there’s already `access_log` defined in the `http` context.
+--
+
+startTimeoutMsec `(?number)`::
+Number of milliseconds after the start to wait for the nginx to respond to the health-check request (`HEAD ++http://<bindAddress>:<ports[0]>/++`).
++
+Defaults to `1000`.
+
+
+=== NginxServer
+
+A return value of <<startNginx, `startNginx()`>>.
+
+config `(string)`::
+The current nginx configuration.
+
+pid `(number)`::
+PID of the nginx process.
+
+port `(number)`::
+Number of the first port allocated for nginx, i.e. the port on which nginx should listen for connections.
+It’s the same as `ports[0]`.
+
+ports `(number[])`::
+A list of port numbers allocated for nginx.
+
+workDir `(string)`::
+Path of the nginx’s working directory.
+
+readAccessLog `() => Promise<string>`::
+Reads new messages from the access log since the last call of `readAccessLog()`.
++
+Throws `Error` if the process was created with option `accessLog` other than `'buffer'` or `undefined`.
+
+readErrorLog `() => Promise<string>`::
+Reads new messages from the error log since the last call of `readErrorLog()`.
++
+Throws `Error` if the process was created with option `errorLog` other than `'buffer'` or `undefined`.
+
+stop `() => Promise<void>`::
+Stops the nginx and cleans-up temporary files and directories.
+
+
+=== NginxVersionInfo
+
+Parsed output of `nginx -V` returned by <<nginxVersionInfo, `nginxVersionInfo()`>>.
+
+version `(string)`::
+Nginx version number (e.g. `'1.18.0'`).
+
+modules `(Object.<string, string>)`::
+An object of module names as properties with value `'with'`, `'with-dynamic'`, or `'without'`.
++
+.Example:
+[source, ts]
+----
+{
+  http_fastcgi: 'without',
+  http_geoip: 'with-dynamic',
+  http_ssl: 'with',
+}
+----
+
+
+=== NginxConfEditor
+
+Nginx configuration editor returned by <<parseConf, `parseConf()`>>.
+
+get `(path: string) => string | string[] | undefined`::
+Returns a value of a directive at the path specified by a JSON Pointer (e.g. `/http/servers/0/listen`).
++
+* If the directive is not declared, returns `undefined`.
+* If the path points to an unnamed block (e.g. `server`), returns an empty string.
+* If an intermediate directive is declared multiple times and no index is specified in the path (e.g. `/http/servers/listen`), the first one is selected (`/http/servers/0/listen`).
+* If the path points to a directive that is declared multiple times (in the same context), returns an array of each declaration’s value.
+
+applyPatch `(patch: <<PatchOperation>>[]) => this`::
+Applies the specified patch operations on the config.
++
+Throws `RangeError` if some intermediate directive on the path does not exist.
+
+toString `() => string`::
+Dumps the config back to string.
+
+
+=== PatchOperation
+
+A patch operation to be performed on nginx config.
+
+It’s an object with the following properties:
+
+op `(string)`::
+The operation name; one of:
+
+* `'add'` -- Adds a directive.
+* `'default'` -- Sets a directive if it’s not declared yet.
+* `'remove'` -- Removes a directive.
+* `'set'` -- Sets a directive and removes its existing declarations in the same context.
+
+path `(string)`::
+A JSON Pointer of the directive to be added, set or removed.
++
+For example, `/http/server/1/listen` points to a directive `listen` in the second `server` context inside `http` context.
+See documentation of `get` function in <<NginxConfEditor>> for more information.
+
+value `(string)`::
+A value of the directive (not defined for op `'remove'`).
+
+This is based on http://jsonpatch.com/[JSON Patch], but with a different operations.
+
+
+=== Logging
+
+. If https://github.com/Download/anylogger[anylogger] is available and initialized (any adapter has been registered), then:
+** all log messages will go through `anylogger` logger `nginx-binaries`.
+
+. If https://www.npmjs.com/package/debug[debug] is available, then:
+** _debug_ messages will be logged via `debug` logger `nginx-binaries`, others (error, warn, info) via `console`.
+
+. otherwise:
+** _error_, _warn_, and _info_ messages will be logged via https://nodejs.org/api/console.html[`console`], _debug_ messages will be discarded.
+
+If none of these options is suitable, you can provide your own logger using <<setLogger, `setLogger()`>>:
+
+[source, js, subs="+attributes"]
+----
+import { setLogger } from '{npm-name}'
+
+setLogger({
+  warn: console.warn,
+  error: console.error,
+  // undefined logging functions will be replaced with no-op
+})
+----
+
+endif::npm-readme[]
+
+
 == License
 
 This project is licensed under http://opensource.org/licenses/MIT/[MIT License].

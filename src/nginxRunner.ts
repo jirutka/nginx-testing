@@ -44,6 +44,7 @@ export type NginxOptions =
   | RequiredKeys<BaseOptions, 'configPath'>
   | RequiredKeys<BaseOptions, 'config'>
 
+// NOTE: Keep in sync with API section in README.adoc (until I figure out how to generate it).
 /**
  * Options for the {@link startNginx} function.
  */
@@ -51,7 +52,7 @@ interface BaseOptions {
   /**
    * Name or path of the nginx binary to start. Defaults to `'nginx'`.
    *
-   * This option is ignored when `version` is provided.
+   * This option is ignored if `version` is provided.
    */
   binPath?: string
   /**
@@ -129,7 +130,7 @@ interface BaseOptions {
    *
    * - `'buffer'` -- Collect the nginx's stderr to a buffer that can be read using
    *   `readErrorLog()` (default).
-   * - `'ignore'` - Ignore nginx's stderr.
+   * - `'ignore'` -- Ignore nginx's stderr.
    * - `'inherit'` -- Pass through the nginx's stderr output to the Node process.
    * - `<Writable>` -- A writable stream to pipe the nginx's stderr to.
    *
@@ -164,6 +165,7 @@ type RequiredKeys<O extends object, K extends keyof O = keyof O> = O & {
   [L in K]-?: O[L]
 }
 
+// NOTE: Keep in sync with API section in README.adoc (until I figure out how to generate it).
 /**
  * A return value of the {@link startNginx} function.
  */

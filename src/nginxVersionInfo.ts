@@ -4,8 +4,9 @@ import { log } from './logger'
 
 
 /**
- * Parsed output of `nginx -V` returned from {@link nginxVersionInfo}.
+ * Parsed output of `nginx -V` returned by {@link nginxVersionInfo}.
  */
+// NOTE: Keep in sync with API section in README.adoc (until I figure out how to generate it).
 export interface NginxVersionInfo {
   /**
    * Nginx version number (e.g. `'1.18.0'`).
