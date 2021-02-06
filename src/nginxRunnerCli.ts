@@ -1,10 +1,13 @@
 import watch from 'node-watch'
 import * as parseArgs from 'minimist'
 import * as process from 'process'
+import { $INLINE_JSON } from 'ts-transformer-inline-file'
 
 import { arrify } from './internal/utils'
 import { log } from './logger'
 import { startNginx, NginxOptions } from './nginxRunner'
+
+const { version: pkgVersion, bugs: bugsUrl } = $INLINE_JSON('../package.json')
 
 
 // TODO: Allow to set log level.
@@ -14,7 +17,8 @@ const progName = 'start-nginx'
 const helpMsg = `\
 Usage: ${progName} [options] <conf-file>
 
-Start nginx server with the given config. This script is part of nginx-testing package.
+Start nginx server with the given config and reload it on changes.
+This program is part of nginx-testing ${pkgVersion}.
 
 Arguments:
   <conf-file>               Path of the nginx configuration file.
@@ -44,6 +48,8 @@ Options:
   -D --watch-delay <msec>   Delay time between reloads in milliseconds. Defaults to 200 ms.
 
   -h --help                 Show this message and exit.
+
+Please report bugs at <${bugsUrl}>.
 `
 
 const string = (value?: any) =>
