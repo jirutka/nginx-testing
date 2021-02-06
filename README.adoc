@@ -1,4 +1,7 @@
 = nginx testing
+:toc: macro
+:toc-title:
+// custom
 :npm-name: nginx-testing
 :gh-name: jirutka/{npm-name}
 
@@ -14,6 +17,14 @@ It’s supported and tested on Linux, macOS and Windows.
 Nginx binaries are provided by project https://github.com/jirutka/nginx-binaries[nginx-binaries] for any Linux footnote:[nginx binaries are built as standalone static executables, so they works on every Linux system regardless of used libc.] (x86_64, aarch64, armv7, ppc64le), macOS (x86_64) and Windows (x86_64).
 
 TODO: Add more information.
+
+
+ifndef::npm-readme[]
+[discrete]
+== Table of Contents
+
+toc::[]
+endif::npm-readme[]
 
 
 == Installation
