@@ -31,7 +31,7 @@
     "test": "src"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.build.json && rimraf lib/internal/*.d.ts*",
+    "build": "ttsc -p tsconfig.build.json && rimraf lib/internal/*.d.ts*",
     "clean": "rimraf coverage/ lib/ node_modules/.cache",
     "lint": "tsc --noEmit",
     "prepublishOnly": "yarn build && asciidoctor -b docbook -a npm-readme -a gh-branch=v$npm_package_version -o - README.adoc | pandoc -f docbook -t gfm --base-header-level 2 -o README.md",
@@ -77,6 +77,8 @@
     "source-map-support": "~0.5.19",
     "tiny-typed-emitter": "~2.0.3",
     "ts-mockito": "~2.6.1",
+    "ts-transformer-inline-file": "~0.1.1",
+    "ttypescript": "~1.5.12",
     "typescript": "~4.1.3",
     "wait-for-expect": "~3.0.2",
     "which": "~2.0.2"
