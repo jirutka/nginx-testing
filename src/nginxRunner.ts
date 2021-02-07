@@ -231,10 +231,10 @@ export interface NginxServer {
  * Starts nginx server with the given configuration.
  *
  * @example
- * import { startNginx, NginxProcess } from 'nginx-testing'
+ * import { startNginx, NginxServer } from 'nginx-testing'
  * import fetch from 'node-fetch'
  *
- * let nginx: NginxProcess
+ * let nginx: NginxServer
  *
  * before(async () => {
  *   nginx = await startNginx({ version: '1.18.x', configPath: './nginx.conf' })
