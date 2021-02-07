@@ -169,7 +169,8 @@ interface BaseOptions {
   accessLog?: 'buffer' | 'ignore' | Writable
   /**
    * Number of milliseconds after the start to wait for the nginx to respond to the
-   * health-check request (`HEAD http://<bindAddress>:<ports[0]>/`).
+   * health-check request (`HEAD http://<bindAddress>:<ports[0]>/`). Any HTTP status is
+   * considered as success - it just checks if the nginx is listening and responding.
    *
    * Defaults to `1000`.
    */
