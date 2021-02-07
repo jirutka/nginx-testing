@@ -41,7 +41,7 @@
     "node": ">= 14.0.0"
   },
   "dependencies": {
-    "@logdna/tail-file": "^2.0.4",
+    "@logdna/tail-file": "^2.0.5",
     "execa": "^5.0.0",
     "get-port": "^5.1.1",
     "minimist": "^1.2.5",
