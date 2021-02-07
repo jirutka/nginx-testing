@@ -13,10 +13,8 @@ endif::env-github[]
 
 This project provides support for easy integration/acceptance testing of https://nginx.org/[nginx] configuration using TypeScript or JavaScript, primarily for testing https://nginx.org/en/docs/njs/[njs] (NGINX JavaScript) scripts.
 
-It’s supported and tested on Linux, macOS and Windows.
-Nginx binaries are provided by project https://github.com/jirutka/nginx-binaries[nginx-binaries] for any Linux footnote:[nginx binaries are built as standalone static executables, so they works on every Linux system regardless of used libc.] (x86_64, aarch64, armv7, ppc64le), macOS (x86_64) and Windows (x86_64).
-
-TODO: Add more information.
+It allows you to run tests against various nginx versions on any Linux, macOS or Windows (x64) system without need to install nginx or use some overcomplex methods such as Docker footnote:[Yes, that’s right, you don’t need Docker to run a damn binary!].
+{npm-name} automatically downloads a precompiled nginx binary for your system and architecture from project https://github.com/jirutka/nginx-binaries[nginx-binaries].
 
 
 ifndef::npm-readme[]
