@@ -366,6 +366,75 @@ setLogger({
 endif::npm-readme[]
 
 
+== CLI
+
+// Pandoc conversion to Markdown doesn't handle definition lists.
+ifdef::npm-readme[]
+https://github.com/{gh-name}#cli[See on GitHub].
+
+endif::npm-readme[]
+ifndef::npm-readme[]
+
+=== start-nginx
+
+// NOTE: Keep this section in sync with --help message in nginxRunnerCli.ts (until I write a script to generate it).
+
+----
+start-nginx [options] <conf-file>
+start-nginx -h | --help
+----
+
+Start nginx server with the given config and reload it on changes.
+
+
+==== Arguments
+
+<conf-file>::
+Path of the nginx configuration file.
+
+
+==== Options
+
+-b --bin-path <file>::
+Name or path of the nginx binary to start.
+Defaults to `nginx`.
+This option is ignored if *--version* is specified.
+
+-v --version <semver>::
+A SemVer version range specifying the nginx version to download from https://github.com/jirutka/nginx-binaries[nginx-binaries] a and run.
+
+-A --bind-address <host>::
+Hostname or IP address to bind the port(s) on.
+Defaults to 127.0.0.1.
+
+-p --port <port>::
+Port number(s) for substituting `++__PORT__++`, `++__PORT_1__++`, ..., `++__PORT_9__++` placeholders in the nginx config.
+Repeat this option for more ports.
+Defaults to random port numbers.
+
+-d --work-dir <dir>::
+Path of a directory that will be passed as a prefix into nginx.
+If not provided, a temporary directory will be automatically created.
+
+-T --start-timeout <msec>::
+Number of milliseconds after the start to wait for the nginx to respond to the health-check request.
+Defaults to 1,000 ms.
+
+-w --watch <path>::
+Watch file or directory (recursively) and reload nginx on changes.
+*<conf-file>* is watched implicitly.
+Repeat this option for more paths.
+
+-D --watch-delay <msec>::
+Delay time between reloads in milliseconds.
+Defaults to 200 ms.
+
+-h --help::
+Show help message and exit.
+
+endif::npm-readme[]
+
+
 == License
 
 This project is licensed under http://opensource.org/licenses/MIT/[MIT License].

@@ -14,6 +14,7 @@ const { version: pkgVersion, bugs: bugsUrl } = $INLINE_JSON('../package.json')
 
 const progName = 'start-nginx'
 
+// NOTE: Keep in sync with CLI section in README.adoc (until I write a script to generate it).
 const helpMsg = `\
 Usage:
   ${progName} [options] <conf-file>
