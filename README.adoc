@@ -38,9 +38,9 @@ yarn add --dev {npm-name}
 ----
 
 
-== Examples
+== Usage Examples
 
-=== Nginx Runner
+=== Testing with Mocha
 
 ._example.test.ts:_
 [source, ts]
