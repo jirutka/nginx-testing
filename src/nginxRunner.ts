@@ -169,8 +169,9 @@ interface BaseOptions {
   accessLog?: 'buffer' | 'ignore' | Writable
   /**
    * Number of milliseconds after the start to wait for the nginx to respond to the
-   * health-check request (`HEAD http://<bindAddress>:<ports[0]>/`). Any HTTP status is
-   * considered as success - it just checks if the nginx is listening and responding.
+   * health-check request (`HEAD http://<bindAddress>:<ports[0]>/health`). Any HTTP
+   * status is considered as success - it just checks if the nginx is listening and
+   * responding.
    *
    * Defaults to `1000`.
    */
@@ -337,7 +338,8 @@ export async function startNginx (opts: NginxOptions): Promise<NginxServer> {
       throw err
     }
 
-    if (!await waitForHttpPortOpen({ hostname: bindAddress, port: ports[0] }, startTimeoutMsec)) {
+    const checkRequestOpts = { hostname: bindAddress, port: ports[0], path: '/health' }
+    if (!await waitForHttpPortOpen(checkRequestOpts, startTimeoutMsec)) {
       dumpErrorLog()
       throw Error(`Failed to start nginx, no response on port ${ports[0]}`)
     }
