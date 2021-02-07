@@ -60,15 +60,15 @@ after(async () => {
 
 beforeEach(async () => {
   // Consume logs (i.e. clean them before the test).
-  await ngx.readAccessLog()
-  await ngx.readErrorLog()
+  await nginx.readAccessLog()
+  await nginx.readErrorLog()
 })
 
 afterEach(async function () {
   // Print logs if the test failed.
   if (this.currentTest?.state === 'failed') {
-    console.error('Access log:\n' + await ngx.readAccessLog())
-    console.error('Error log:\n' + await ngx.readErrorLog())
+    console.error('Access log:\n' + await nginx.readAccessLog())
+    console.error('Error log:\n' + await nginx.readErrorLog())
   }
 })
 
