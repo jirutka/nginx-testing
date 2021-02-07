@@ -60,7 +60,7 @@ const checkHttpWithTimeout = (
       return reject(err)
     })
     .on('timeout', () => {
-      req.abort()
+      req.destroy()
       const err = Error('Connection timeout')
       ;(err as any).code = 'ECONNTIMEOUT'
       return reject(err)
