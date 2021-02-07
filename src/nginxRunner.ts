@@ -76,6 +76,19 @@ interface BaseOptions {
    * it will be written into `nginx.conf` file in `workDir`. In either case, this file
    * will be automatically deleted after stopping the nginx.
    *
+   * The config may include the following placeholders which will be replaced with
+   * corresponding values:
+   *
+   * - `__ADDRESS__` -- The address as specified in `bindAddress`.
+   * - `__CONFDIR__` -- Path to directory with the config file as specified in `configPath`.
+   * - `__CWD__` -- The current working directory as reported by `process.cwd()`.
+   * - `__WORKDIR__` -- Path to the nginx's working directory as specified in `workDir`.
+   * - `__PORT__`, `__PORT_1__`, ..., `__PORT_9__` -- The port numbers as specified in
+   *   `ports` and `preferredPorts`.
+   *
+   * It will be modified for compatibility with the runner by applying patch operations
+   * specified in {@link configPatch} variable.
+   *
    * Either `configPath`, or `config` must be provided!
    */
   config?: string
@@ -86,6 +99,8 @@ interface BaseOptions {
    * a temporary file `.<filename>~` (where `<filename>` is a filename from `configPath`)
    * in the `configPath`'s directory (e.g. `conf/nginx.conf` -> `conf/.nginx.conf~`).
    * This temporary file will be automatically deleted after stopping the nginx.
+   *
+   * See {@link config} option for information about placeholders and patching.
    *
    * Either `configPath`, or `config` must be provided!
    */

@@ -162,19 +162,35 @@ Not all versions are available.
 You can find a list of available binaries at https://jirutka.github.io/nginx-binaries/[nginx-binaries].
 
 config `(?string)`::
-Nginx configuration to use.
 +
+--
+Nginx configuration to use.
+
 If `configPath` is provided, the processed config will be written to a temporary file `.<filename>~` (where `<filename>` is a filename from `configPath`) in the `configPath`’s directory (e.g. `conf/nginx.conf` -> `conf/.nginx.conf~`).
 Otherwise it will be written into `nginx.conf` file in `workDir`.
 In either case, this file will be automatically deleted after stopping the nginx.
-+
+
+The config may include the following placeholders which will be replaced with
+corresponding values:
+
+* `++__ADDRESS__++` -- The address as specified in `bindAddress`.
+* `++__CONFDIR__++` -- Path to directory with the config file as specified in `configPath`.
+* `++__CWD__++` -- The current working directory as reported by `process.cwd()`.
+* `++__WORKDIR__++` -- Path to the nginx’s working directory as specified in `workDir`.
+* `++__PORT__++`, `++__PORT_1__++`, ..., `++__PORT_9__++` -- The port numbers as specified in `ports` and `preferredPorts`.
+
+It will be modified for compatibility with the runner by applying patch operations specified in `configPatch` variable.
+
 Either `configPath`, or `config` must be provided!
+--
 
 configPath `(?string)`::
 Path of the nginx configuration file to use.
 +
 This file will be processed and the resulting config file will be written to a temporary file `.<filename>~` (where `<filename>` is a filename from `configPath`) in the `configPath`’s directory (e.g. `conf/nginx.conf` -> `conf/.nginx.conf~`).
 This temporary file will be automatically deleted after stopping the nginx.
++
+See `config` option for information about placeholders and patching.
 +
 Either `configPath`, or `config` must be provided!
 
