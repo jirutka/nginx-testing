@@ -15,7 +15,9 @@ const { version: pkgVersion, bugs: bugsUrl } = $INLINE_JSON('../package.json')
 const progName = 'start-nginx'
 
 const helpMsg = `\
-Usage: ${progName} [options] <conf-file>
+Usage:
+  ${progName} [options] <conf-file>
+  ${progName} -h | --help
 
 Start nginx server with the given config and reload it on changes.
 This program is part of nginx-testing ${pkgVersion}.
