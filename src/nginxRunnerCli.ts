@@ -5,7 +5,7 @@ import { $INLINE_JSON } from 'ts-transformer-inline-file'
 
 import { arrify } from './internal/utils'
 import { log } from './logger'
-import { startNginx, NginxOptions } from './nginxRunner'
+import { configPatch, startNginx, NginxOptions } from './nginxRunner'
 
 const { version: pkgVersion, bugs: bugsUrl } = $INLINE_JSON('../package.json')
 
@@ -129,6 +129,11 @@ function parseCliArgs (argv: string[]): Options {
 }
 
 async function run (opts: Options): Promise<void> {
+  // Reload with SIGHUP doesn't work without master process.
+  // TODO: Fix problem with stopping nginx on Windows when master process is
+  //   enabled and then remove this patch operation completely.
+  configPatch.splice(configPatch.findIndex(p => p.path === '/master_process'), 1)
+
   const nginx = await startNginx({
     ...opts,
     accessLog: process.stdout,
