@@ -252,6 +252,15 @@ Any HTTP status is considered as success -- it just checks if the nginx is liste
 Defaults to `1000`.
 
 
+=== RestartOptions
+
+config `(?string)`::
+The same as in <<NginxOptions>>.
+
+configPath `(?string)`::
+The same as in <<NginxOptions>>.
+
+
 === NginxServer
 
 A return value of <<startNginx, `startNginx()`>>.
@@ -281,6 +290,11 @@ readErrorLog `() => Promise<string>`::
 Reads new messages from the error log since the last call of `readErrorLog()`.
 +
 Throws `Error` if the process was created with option `errorLog` other than `'buffer'` or `undefined`.
+
+restart `(?<<RestartOptions>>) => Promise<void>`::
+Restarts the nginx, optionally with a new configuration.
+Options `config` and `configPath` are mutually exclusive here.
+The new nginx process will be started with the same ports, working directory etc.
 
 stop `() => Promise<void>`::
 Stops the nginx and cleans-up temporary files and directories.
