@@ -117,6 +117,42 @@ describe('startNginx', function () {
             'Expected to return nginx error log messages.')
         })
 
+        describe('.restart', () => {
+
+          test('without new config', async () => {
+            const oldPid = nginx.pid
+
+            await nginx.restart()
+
+            assert(nginx.pid !== oldPid)
+            assert(!processExists(oldPid), 'Expected the old process to be dead.')
+            assert(processExists(nginx.pid))
+
+            const url = `http://127.0.0.1:${nginx.port}/test`
+            const resp = await fetch(url)
+
+            assert(resp.status === 418, `Expected nginx to respond to GET ${url}.`)
+          })
+
+          test('with new config', async () => {
+            const oldConfig = nginx.config
+            const oldPid = nginx.pid
+
+            await nginx.restart({ config: config.replace('return 418', 'return 428') })
+
+            assert(nginx.config !== oldConfig)
+            assert(nginx.pid !== oldPid)
+            assert(!processExists(oldPid), 'Expected the old process to be dead.')
+            assert(processExists(nginx.pid))
+
+            const url = `http://127.0.0.1:${nginx.port}/test`
+            const resp = await fetch(url)
+
+            assert(resp.status === 428,
+              `Expected nginx to respond to GET ${url} with status from the new config.`)
+          })
+        })
+
         describe('.stop', () => {
 
           test('kills the nginx process', async () => {

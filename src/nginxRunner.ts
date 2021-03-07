@@ -224,10 +224,19 @@ export interface NginxServer {
    */
   readErrorLog (): Promise<string>
   /**
+   * Restarts the nginx, optionally with a new configuration.
+   * Options `config` and `configPath` are mutually exclusive here.
+   *
+   * The new nginx process will be started with the same ports, working directory etc.
+   */
+  restart (opts?: RestartOptions): Promise<void>
+  /**
    * Stops the nginx and cleans-up temporary files and directories.
    */
   stop (): Promise<void>
 }
+
+type RestartOptions = Pick<BaseOptions, 'config' | 'configPath'>
 
 /**
  * Starts nginx server with the given configuration.
@@ -264,8 +273,9 @@ export async function startNginx (opts: NginxOptions): Promise<NginxServer> {
   const [onCleanup, cleanup] = useCleanup({ registerExitHook: true })
 
   try {
-    let workDir = opts.workDir
-    if (workDir) {
+    let workDir: string
+    if (opts.workDir) {
+      workDir = opts.workDir
       await FS.mkdir(workDir, { recursive: true })
     } else {
       workDir = createTempDir('nginx-testing')
@@ -305,10 +315,8 @@ export async function startNginx (opts: NginxOptions): Promise<NginxServer> {
     // Start nginx
 
     log.info(`Starting nginx ${versionInfo.version} on port(s): ${ports.join(', ')}`)
-    let [ngxProcess, errorLogBuffer] = await startAndCheckNginxProcess(
-      { binPath, configPath, bindAddress, ports, workDir, errorLog, startTimeoutMsec },
-      onCleanup,
-    )
+    const startOpts = { binPath, configPath, bindAddress, ports, workDir, errorLog, startTimeoutMsec }
+    let [ngxProcess, errorLogBuffer] = await startAndCheckNginxProcess(startOpts, onCleanup)
 
     // Set-up access log
 
@@ -323,8 +331,8 @@ export async function startNginx (opts: NginxOptions): Promise<NginxServer> {
     // Return
 
     return {
-      config,
-      pid: ngxProcess.pid,
+      get config () { return config },
+      get pid () { return ngxProcess.pid },
       ports,
       port: ports[0]!,
       workDir,
@@ -344,6 +352,21 @@ export async function startNginx (opts: NginxOptions): Promise<NginxServer> {
           throw Error("This function is available only when the option 'errorLog' is 'buffer'")
         }
         return errorLogBuffer.getContentsAsString() || ''
+      },
+      restart: async (opts = {}) => {
+        log.info(`Restarting nginx`)
+        ngxProcess.cancel()
+
+        if (opts.config || opts.configPath) {
+          const newConfig = opts.config ?? await FS.readFile(opts.configPath!, 'utf8')
+          config = adjustConfig(newConfig, { ...versionInfo, bindAddress, configPath, ports, workDir })
+
+          log.debug(`Writing config to ${configPath}:\n-----BEGIN CONFIG-----\n${config}\n-----END CONFIG-----`)
+          await FS.writeFile(configPath, config, 'utf8')
+        }
+
+        log.debug('Starting new nginx process')
+        ;[ngxProcess, errorLogBuffer] = await startAndCheckNginxProcess(startOpts, onCleanup)
       },
       stop: cleanup,
     }
@@ -417,8 +440,10 @@ async function startAndCheckNginxProcess (
     stderr: errorLog === 'buffer' ? 'pipe' : errorLog,
   })
   onCleanup(() => {
-    log.debug(`Stopping nginx (${ngxProcess.pid})`)
-    ngxProcess.cancel()
+    if (!ngxProcess.killed) {
+      log.debug(`Stopping nginx (${ngxProcess.pid})`)
+      ngxProcess.cancel()
+    }
   })
   log.debug(`Nginx started with PID ${ngxProcess.pid}`)
 
