@@ -1,5 +1,5 @@
 import * as path from 'path'
-import type { Writable } from 'stream'
+import { EventEmitter, Writable } from 'stream'
 
 import * as TailFile from '@logdna/tail-file'
 import * as execa from 'execa'
@@ -9,7 +9,7 @@ import { NginxBinary } from 'nginx-binaries'
 import { WritableStreamBuffer } from 'stream-buffers'
 
 import * as FS from './internal/fs'
-import { useCleanup } from './internal/useCleanup'
+import { OnCleanupHook, useCleanup } from './internal/useCleanup'
 import { createTempDir } from './internal/tempDir'
 import { waitForHttpPortOpen } from './internal/waitForHttpPortOpen'
 import { log } from './logger'
@@ -305,31 +305,20 @@ export async function startNginx (opts: NginxOptions): Promise<NginxServer> {
     // Start nginx
 
     log.info(`Starting nginx ${versionInfo.version} on port(s): ${ports.join(', ')}`)
-    const [ngxProcess, errorLogBuffer] = await startAndCheckNginxProcess(
+    let [ngxProcess, errorLogBuffer] = await startAndCheckNginxProcess(
       { binPath, configPath, bindAddress, ports, workDir, errorLog, startTimeoutMsec },
       onCleanup,
     )
 
     // Set-up access log
 
-    let accessLogTail: TailFile | undefined
-    let accessLogBuffer: WritableStreamBuffer | undefined
-    if (accessLog !== 'ignore') {
-      const accessLogPath = path.join(workDir, 'access.log')
+    const accessLogStream = accessLog instanceof EventEmitter
+      ? accessLog
+      : new WritableStreamBuffer()
 
-      accessLogTail = new TailFile(accessLogPath, { pollFileIntervalMs: 10 })
-      accessLogTail.pipe(accessLog === 'buffer'
-        ? (accessLogBuffer = new WritableStreamBuffer())
-        : accessLog
-      )
-      log.debug(`Begins polling of ${accessLogPath}`)
-      await accessLogTail.start()
-
-      // TailFile startPos from EOF doesn't work reliably, so better to remove
-      // the file to avoid reading old logs on next run.
-      onCleanup(() => FS.rmSync(accessLogPath))
-      onCleanup(async () => await accessLogTail!.quit())
-    }
+    const accessLogTail = accessLog !== 'ignore'
+      ? await tailLogFile(path.join(workDir, 'access.log'), accessLogStream, onCleanup)
+      : null
 
     // Return
 
@@ -341,13 +330,13 @@ export async function startNginx (opts: NginxOptions): Promise<NginxServer> {
       workDir,
 
       readAccessLog: async () => {
-        if (!accessLogBuffer || !accessLogTail) {
+        if (!accessLogTail || !(accessLogStream instanceof WritableStreamBuffer)) {
           throw Error("This function is available only when the option 'accessLog' is 'buffer'")
         }
         if ('_pollFileForChanges' in accessLogTail) {
           await (accessLogTail as any)._pollFileForChanges()
         }
-        return accessLogBuffer.getContentsAsString() || ''
+        return accessLogStream.getContentsAsString() || ''
       },
       // This function doesn't need to be async now, but may be in the future.
       readErrorLog: async () => {
@@ -417,7 +406,7 @@ function tempConfigPath (filepath: string): string {
 
 async function startAndCheckNginxProcess (
   opts: Required<Omit<NginxOptions, 'config' | 'version' | 'preferredPorts' | 'accessLog'>>,
-  onCleanup: (fn: () => Promise<void> | void) => void,
+  onCleanup: OnCleanupHook,
 ): Promise<[process: ExecaChildProcess, errorLogBuffer?: WritableStreamBuffer]> {
   const { errorLog } = opts
 
@@ -461,6 +450,25 @@ async function startAndCheckNginxProcess (
   }
 
   return [ngxProcess, errorLogBuffer]
+}
+
+async function tailLogFile (
+  filepath: string,
+  output: Writable,
+  onCleanup: OnCleanupHook,
+): Promise<TailFile> {
+  const tail = new TailFile(filepath, { pollFileIntervalMs: 10 })
+  tail.pipe(output)
+
+  log.debug(`Begins polling of ${filepath}`)
+  await tail.start()
+
+  // TailFile startPos from EOF doesn't work reliably, so better to remove
+  // the file to avoid reading old logs on next run.
+  onCleanup(() => FS.rmSync(filepath))
+  onCleanup(async () => await tail!.quit())
+
+  return tail
 }
 
 const waitForProcessError = (process: ExecaChildProcess, timeout: number) => new Promise<void>((resolve, reject) => {
