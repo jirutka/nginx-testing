@@ -1,10 +1,12 @@
 import { log } from '../logger'
 
 
-type UseCleanup = [
-  onCleanup: (fn: () => Promise<void> | void) => void,
-  cleanup: () => Promise<void>,
+export type UseCleanup = [
+  onCleanup: OnCleanupHook,
+  cleanup: CleanupHook,
 ]
+export type OnCleanupHook = (fn: () => Promise<void> | void) => void
+export type CleanupHook = () => Promise<void>
 
 interface Options {
   /**
