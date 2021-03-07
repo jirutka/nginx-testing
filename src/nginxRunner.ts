@@ -305,44 +305,10 @@ export async function startNginx (opts: NginxOptions): Promise<NginxServer> {
     // Start nginx
 
     log.info(`Starting nginx ${versionInfo.version} on port(s): ${ports.join(', ')}`)
-    const ngxProcess = execa(binPath, ['-c', configPath, '-p', workDir], {
-      stdin: 'ignore',
-      stdout: 'ignore',
-      stderr: errorLog === 'buffer' ? 'pipe' : errorLog,
-    })
-    onCleanup(() => {
-      log.debug(`Stopping nginx (${ngxProcess.pid})`)
-      ngxProcess.cancel()
-    })
-    log.debug(`Nginx started with PID ${ngxProcess.pid}`)
-
-    // Set-up error log
-
-    let errorLogBuffer: WritableStreamBuffer | undefined
-    if (errorLog === 'buffer') {
-      errorLogBuffer = new WritableStreamBuffer()
-      ngxProcess.stderr!.pipe(errorLogBuffer)
-    }
-    const dumpErrorLog = () => {
-      const msg = errorLogBuffer?.getContentsAsString()
-      msg && log.error(msg)
-    }
-
-    // Check if running
-
-    // Wait up to 50 ms for an error and continue if no error appeared.
-    // If nginx cannot be executed, e.g. invalid path, we want to fail fast,
-    // dump error log and throw a relevant error.
-    try { await waitForProcessError(ngxProcess, 50) } catch (err) {
-      dumpErrorLog()
-      throw err
-    }
-
-    const checkRequestOpts = { hostname: bindAddress, port: ports[0], path: '/health' }
-    if (!await waitForHttpPortOpen(checkRequestOpts, startTimeoutMsec)) {
-      dumpErrorLog()
-      throw Error(`Failed to start nginx, no response on port ${ports[0]}`)
-    }
+    const [ngxProcess, errorLogBuffer] = await startAndCheckNginxProcess(
+      { binPath, configPath, bindAddress, ports, workDir, errorLog, startTimeoutMsec },
+      onCleanup,
+    )
 
     // Set-up access log
 
@@ -447,6 +413,54 @@ const unixPath = (filepath: string) => filepath.replace(/\\/g, '/')
 
 function tempConfigPath (filepath: string): string {
   return path.join(path.dirname(path.resolve(filepath)), `.${path.basename(filepath)}~`)
+}
+
+async function startAndCheckNginxProcess (
+  opts: Required<Omit<NginxOptions, 'config' | 'version' | 'preferredPorts' | 'accessLog'>>,
+  onCleanup: (fn: () => Promise<void> | void) => void,
+): Promise<[process: ExecaChildProcess, errorLogBuffer?: WritableStreamBuffer]> {
+  const { errorLog } = opts
+
+  // Start process
+  const ngxProcess = execa(opts.binPath, ['-c', opts.configPath, '-p', opts.workDir], {
+    stdin: 'ignore',
+    stdout: 'ignore',
+    stderr: errorLog === 'buffer' ? 'pipe' : errorLog,
+  })
+  onCleanup(() => {
+    log.debug(`Stopping nginx (${ngxProcess.pid})`)
+    ngxProcess.cancel()
+  })
+  log.debug(`Nginx started with PID ${ngxProcess.pid}`)
+
+  // Set-up error log
+  let errorLogBuffer: WritableStreamBuffer | undefined
+  if (errorLog === 'buffer') {
+    errorLogBuffer = new WritableStreamBuffer()
+    ngxProcess.stderr!.pipe(errorLogBuffer)
+  }
+  const dumpErrorLog = () => {
+    const msg = errorLogBuffer?.getContentsAsString()
+    msg && log.error(msg)
+  }
+
+  // Check if running
+
+  // Wait up to 50 ms for an error and continue if no error appeared.
+  // If nginx cannot be executed, e.g. invalid path, we want to fail fast,
+  // dump error log and throw a relevant error.
+  try { await waitForProcessError(ngxProcess, 50) } catch (err) {
+    dumpErrorLog()
+    throw err
+  }
+
+  const checkRequestOpts = { hostname: opts.bindAddress, port: opts.ports[0], path: '/health' }
+  if (!await waitForHttpPortOpen(checkRequestOpts, opts.startTimeoutMsec)) {
+    dumpErrorLog()
+    throw Error(`Failed to start nginx, no response on port ${opts.ports[0]}`)
+  }
+
+  return [ngxProcess, errorLogBuffer]
 }
 
 const waitForProcessError = (process: ExecaChildProcess, timeout: number) => new Promise<void>((resolve, reject) => {
