@@ -308,8 +308,7 @@ export async function startNginx (opts: NginxOptions): Promise<NginxServer> {
 
     config = adjustConfig(config, { ...versionInfo, bindAddress, configPath, ports, workDir })
 
-    log.debug(`Writing config to ${configPath}:\n-----BEGIN CONFIG-----\n${config}\n-----END CONFIG-----`)
-    await FS.writeFile(configPath, config, 'utf8')
+    await writeConfigFile(configPath, config)
     onCleanup(() => FS.rmRfSync(configPath))
 
     // Start nginx
@@ -361,8 +360,7 @@ export async function startNginx (opts: NginxOptions): Promise<NginxServer> {
           const newConfig = opts.config ?? await FS.readFile(opts.configPath!, 'utf8')
           config = adjustConfig(newConfig, { ...versionInfo, bindAddress, configPath, ports, workDir })
 
-          log.debug(`Writing config to ${configPath}:\n-----BEGIN CONFIG-----\n${config}\n-----END CONFIG-----`)
-          await FS.writeFile(configPath, config, 'utf8')
+          await writeConfigFile(configPath, config)
         }
 
         log.debug('Starting new nginx process')
@@ -425,6 +423,11 @@ const unixPath = (filepath: string) => filepath.replace(/\\/g, '/')
 
 function tempConfigPath (filepath: string): string {
   return path.join(path.dirname(path.resolve(filepath)), `.${path.basename(filepath)}~`)
+}
+
+async function writeConfigFile (configPath: string, config: string): Promise<void> {
+  log.debug(`Writing config to ${configPath}:\n-----BEGIN CONFIG-----\n${config}\n-----END CONFIG-----`)
+  await FS.writeFile(configPath, config, 'utf8')
 }
 
 async function startAndCheckNginxProcess (
