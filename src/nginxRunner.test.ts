@@ -39,6 +39,13 @@ describe('startNginx', function () {
   `
   let nginx: NginxServer
 
+  const testNginxResponse = async ({ expectedStatus = 418 } = {}) => {
+    const url = `http://127.0.0.1:${nginx.port}/test`
+    const resp = await fetch(url)
+
+    assert(resp.status === expectedStatus, `Expected nginx to respond to GET ${url}.`)
+  }
+
   afterEach(async () => {
     nginx && await nginx.stop()
   })
@@ -73,10 +80,7 @@ describe('startNginx', function () {
         assert(processExists(nginx.pid))
         assert(nginx.ports.length === 1)
 
-        const url = `http://127.0.0.1:${nginx.port}/test`
-        const resp = await fetch(url)
-
-        assert(resp.status === 418, `Expected nginx to respond to GET ${url}.`)
+        await testNginxResponse()
       })
 
       describe('resolved value', () => {
@@ -128,10 +132,7 @@ describe('startNginx', function () {
             assert(!processExists(oldPid), 'Expected the old process to be dead.')
             assert(processExists(nginx.pid))
 
-            const url = `http://127.0.0.1:${nginx.port}/test`
-            const resp = await fetch(url)
-
-            assert(resp.status === 418, `Expected nginx to respond to GET ${url}.`)
+            await testNginxResponse()
           })
 
           test('with new config', async () => {
@@ -145,11 +146,7 @@ describe('startNginx', function () {
             assert(!processExists(oldPid), 'Expected the old process to be dead.')
             assert(processExists(nginx.pid))
 
-            const url = `http://127.0.0.1:${nginx.port}/test`
-            const resp = await fetch(url)
-
-            assert(resp.status === 428,
-              `Expected nginx to respond to GET ${url} with status from the new config.`)
+            await testNginxResponse({ expectedStatus: 428 })
           })
         })
 
