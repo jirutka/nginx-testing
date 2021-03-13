@@ -291,6 +291,20 @@ Reads new messages from the error log since the last call of `readErrorLog()`.
 +
 Throws `Error` if the process was created with option `errorLog` other than `'buffer'` or `undefined`.
 
+reload `(?<<RestartOptions>>) => Promise<void>`::
+Reloads the nginx (using SIGHUP), optionally with a new configuration.
+Options `config` and `configPath` are mutually exclusive here.
++
+Nginx can be reloaded only when running with the master process.
+This is disabled by default, but you can override it by declaring `master_process on` in the config.
++
+**Important:** The function you are looking for is `restart()`.
+Use `reload()` only if you know that you cannot use `restart()`.
++
+**Caution:** This function doesn’t work on Windows!
++
+Throws `Error` if nginx was started with `master_process off` or if running on Windows (`win32` platform).
+
 restart `(?<<RestartOptions>>) => Promise<void>`::
 Restarts the nginx, optionally with a new configuration.
 Options `config` and `configPath` are mutually exclusive here.

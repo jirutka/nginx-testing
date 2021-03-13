@@ -1,4 +1,6 @@
+import * as OS from 'os'
 import * as path from 'path'
+import * as process from 'process'
 import { EventEmitter, Writable } from 'stream'
 
 import * as TailFile from '@logdna/tail-file'
@@ -8,6 +10,7 @@ import * as getPort from 'get-port'
 import { NginxBinary } from 'nginx-binaries'
 import { WritableStreamBuffer } from 'stream-buffers'
 
+import { arrify } from './internal/utils'
 import * as FS from './internal/fs'
 import { OnCleanupHook, useCleanup } from './internal/useCleanup'
 import { createTempDir } from './internal/tempDir'
@@ -224,6 +227,22 @@ export interface NginxServer {
    */
   readErrorLog (): Promise<string>
   /**
+   * Reloads the nginx (using SIGHUP), optionally with a new configuration.
+   * Options `config` and `configPath` are mutually exclusive here.
+   *
+   * Nginx can be reloaded only when running with the master process. This is disabled
+   * by default, but you can override it by declaring `master_process on` in the config.
+   *
+   * **Important:** The function you are looking for is `restart()`. Use `reload()` only
+   * if you know that you cannot use `restart()`.
+   *
+   * **Cation:** This function doesn't work on Windows!
+   *
+   * @throws {Error} if nginx was started with `master_process off`.
+   * @throws {Error} if running on Windows (`win32` platform).
+   */
+  reload (opts?: RestartOptions): Promise<void>
+  /**
    * Restarts the nginx, optionally with a new configuration.
    * Options `config` and `configPath` are mutually exclusive here.
    *
@@ -306,7 +325,8 @@ export async function startNginx (opts: NginxOptions): Promise<NginxServer> {
       ? tempConfigPath(opts.configPath)
       : path.join(workDir, 'nginx.conf')
 
-    config = adjustConfig(config, { ...versionInfo, bindAddress, configPath, ports, workDir })
+    const configParams: ConfigParams = { ...versionInfo, bindAddress, configPath, ports, workDir }
+    config = adjustConfig(config, configParams)
 
     await writeConfigFile(configPath, config)
     onCleanup(() => FS.rmRfSync(configPath))
@@ -326,6 +346,19 @@ export async function startNginx (opts: NginxOptions): Promise<NginxServer> {
     const accessLogTail = accessLog !== 'ignore'
       ? await tailLogFile(path.join(workDir, 'access.log'), accessLogStream, onCleanup)
       : null
+
+    // Commons for control functions
+
+    const updateConfigIfDefined = async (opts: RestartOptions) => {
+      if (opts.config || opts.configPath) {
+        const newConfig = opts.config ?? await FS.readFile(opts.configPath!, 'utf8')
+
+        config = adjustConfig(newConfig, configParams)
+        await writeConfigFile(configPath, config)
+      }
+    }
+
+    let isMasterProcess: boolean
 
     // Return
 
@@ -352,16 +385,25 @@ export async function startNginx (opts: NginxOptions): Promise<NginxServer> {
         }
         return errorLogBuffer.getContentsAsString() || ''
       },
+      reload: async (opts = {}) => {
+        if (OS.platform() === 'win32') {
+          throw Error('Not supported on Windows')
+        }
+        if (!(isMasterProcess ??= isMasterProcessEnabled(config))) {
+          throw Error('Nginx cannot be reloaded when master_process is off')
+        }
+        log.info(`Reloading nginx`)
+
+        await updateConfigIfDefined(opts)
+
+        log.debug('Sending SIGHUP to nginx process')
+        process.kill(ngxProcess.pid, 'SIGHUP')
+      },
       restart: async (opts = {}) => {
         log.info(`Restarting nginx`)
         ngxProcess.cancel()
 
-        if (opts.config || opts.configPath) {
-          const newConfig = opts.config ?? await FS.readFile(opts.configPath!, 'utf8')
-          config = adjustConfig(newConfig, { ...versionInfo, bindAddress, configPath, ports, workDir })
-
-          await writeConfigFile(configPath, config)
-        }
+        await updateConfigIfDefined(opts)
 
         log.debug('Starting new nginx process')
         ;[ngxProcess, errorLogBuffer] = await startAndCheckNginxProcess(startOpts, onCleanup)
@@ -507,6 +549,10 @@ const waitForProcessError = (process: ExecaChildProcess, timeout: number) => new
     resolve()
   }, timeout)
 })
+
+function isMasterProcessEnabled (config: string): boolean {
+  return arrify(parseConf(config).get('/master_process')).pop() !== 'off'
+}
 
 /** @internal */
 export const __testing = {

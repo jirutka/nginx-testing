@@ -23,7 +23,7 @@ const NginxBinarySpy = spy(NginxBinary)
 describe('startNginx', function () {
   this.slow(250)
 
-  const config = dedent`
+  const testingConfig = dedent`
     events {
     }
     http {
@@ -37,6 +37,7 @@ describe('startNginx', function () {
       }
     }
   `
+  let config: string = testingConfig
   let nginx: NginxServer
 
   const testNginxResponse = async ({ expectedStatus = 418, msg = '' } = {}) => {
@@ -121,6 +122,45 @@ describe('startNginx', function () {
         test('.readErrorLog', async () => {
           assert((await nginx.readErrorLog()).match(/using the "\w+" event method/),
             'Expected to return nginx error log messages.')
+        })
+
+        describe('.reload', () => {
+          before(function () {
+            // Windows doesn't support signals, so we cannot send SIGHUP.
+            if (OS.platform() === 'win32') {
+              this.skip()
+            }
+          })
+
+          test('rejects if master_process is off', async () => {
+            try {
+              await nginx.reload()
+            } catch (err) {
+              return assert(err.message.includes('Nginx cannot be reloaded when master_process is off'))
+            }
+            assert.fail('The function should throw, rather than completing.')
+          })
+
+          describe('when master_process is on', () => {
+            before(() => { config = `${testingConfig}\nmaster_process on;\n` })
+            after(() => { config = testingConfig })
+
+            test('reloads nginx with the given config', async () => {
+              const oldPid = nginx.pid
+
+              await testNginxResponse({ expectedStatus: 418 })
+
+              await nginx.reload({ config: config.replace('return 418', 'return 428') })
+
+              assert(nginx.pid === oldPid)
+              assert(processExists(nginx.pid))
+
+              await retryUntilTimeout(200, async () => testNginxResponse({
+                expectedStatus: 428,
+                msg: 'Expected to respond based on the new config.',
+              }))
+            })
+          })
         })
 
         describe('.restart', () => {
