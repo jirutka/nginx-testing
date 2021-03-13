@@ -60,10 +60,6 @@ describe('waitForHttpPortOpen', function () {
         'Expected the elapsed time to be close to the given timeout.')
     })
 
-    test('when the host address is non-routable', async () => {
-      assert(await waitForHttpPortOpen({ host: '10.255.255.1', port }, 500) === false)
-    })
-
     test('when waiting for HTTP but only given TCP/IP', async () => {
       // We can create a TCP/IP server, but this should not be enough,
       // cause we're waiting for HTTP.
