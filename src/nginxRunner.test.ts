@@ -39,11 +39,13 @@ describe('startNginx', function () {
   `
   let nginx: NginxServer
 
-  const testNginxResponse = async ({ expectedStatus = 418 } = {}) => {
+  const testNginxResponse = async ({ expectedStatus = 418, msg = '' } = {}) => {
     const url = `http://127.0.0.1:${nginx.port}/test`
+    msg ||= `Expected nginx to respond to GET ${url}.`
+
     const resp = await fetch(url)
 
-    assert(resp.status === expectedStatus, `Expected nginx to respond to GET ${url}.`)
+    assert(resp.status === expectedStatus, msg)
   }
 
   afterEach(async () => {
@@ -123,30 +125,45 @@ describe('startNginx', function () {
 
         describe('.restart', () => {
 
-          test('without new config', async () => {
-            const oldPid = nginx.pid
+          const testPid = async (oldPid: number) => {
+            assert(nginx.pid !== oldPid, 'Expected the pid to change.')
+
+            await retryUntilTimeout(100, () => assert(
+              !processExists(oldPid),
+              'Expected the old process to be dead.',
+            ))
+            assert(processExists(nginx.pid))
+          }
+
+          beforeEach(async () => {
+            await testNginxResponse({ expectedStatus: 418 })
+          })
+
+          test('restarts nginx without changing config', async () => {
+            const { config: oldConfig, pid: oldPid, port: oldPort } = nginx
 
             await nginx.restart()
 
-            assert(nginx.pid !== oldPid)
-            assert(!processExists(oldPid), 'Expected the old process to be dead.')
-            assert(processExists(nginx.pid))
+            assert(nginx.config === oldConfig, 'Expected the config not to change.')
+            assert(nginx.port === oldPort, 'Expected the port number not to change.')
 
+            await testPid(oldPid)
             await testNginxResponse()
           })
 
-          test('with new config', async () => {
-            const oldConfig = nginx.config
-            const oldPid = nginx.pid
+          test('restarts nginx with the given config', async () => {
+            const { config: oldConfig, pid: oldPid, port: oldPort } = nginx
 
             await nginx.restart({ config: config.replace('return 418', 'return 428') })
 
             assert(nginx.config !== oldConfig)
-            assert(nginx.pid !== oldPid)
-            assert(!processExists(oldPid), 'Expected the old process to be dead.')
-            assert(processExists(nginx.pid))
+            assert(nginx.port === oldPort, 'Expected the port number not to change.')
 
-            await testNginxResponse({ expectedStatus: 428 })
+            await testPid(oldPid)
+            await testNginxResponse({
+              expectedStatus: 428,
+              msg: 'Expected nginx to respond based on the new config.',
+            })
           })
         })
 
