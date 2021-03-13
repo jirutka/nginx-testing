@@ -9,16 +9,18 @@ jobs:
       matrix:
         os:
           - ubuntu-20.04
-          - macos-latest
           - windows-latest
         node-version:
           - 14
           - 15
-        experimental: [false]
+        continue-on-error: [false]
         include:
-          - { os: ubuntu-18.04, node-version: 14, experimental: false }
-          - { os: ubuntu-16.04, node-version: 14, experimental: false }
-    continue-on-error: ${{ matrix.experimental }}
+          # macOS runners are unstable.
+          - { os: macos-latest, node-version: 14, continue-on-error: true }
+          - { os: macos-latest, node-version: 15, continue-on-error: true }
+          - { os: ubuntu-18.04, node-version: 14, continue-on-error: false }
+          - { os: ubuntu-16.04, node-version: 14, continue-on-error: false }
+    continue-on-error: ${{ matrix.continue-on-error }}
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
