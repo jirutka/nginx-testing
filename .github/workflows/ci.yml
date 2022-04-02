@@ -19,7 +19,6 @@ jobs:
           - { os: macos-latest, node-version: 14, continue-on-error: true }
           - { os: macos-latest, node-version: 15, continue-on-error: true }
           - { os: ubuntu-18.04, node-version: 14, continue-on-error: false }
-          - { os: ubuntu-16.04, node-version: 14, continue-on-error: false }
     continue-on-error: ${{ matrix.continue-on-error }}
     runs-on: ${{ matrix.os }}
     steps:
