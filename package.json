@@ -67,7 +67,7 @@
     "anylogger-loglevel": "~1.0.0",
     "debug": "~4.3.1",
     "dedent": "~0.7.0",
-    "espower-typescript": "~10.0.0",
+    "espower-typescript": "~10.0.1",
     "loglevel": "~1.7.1",
     "mocha": "~10.2.0",
     "mocha-each": "~2.0.1",
