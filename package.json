@@ -61,7 +61,7 @@
     "@types/power-assert": "~1.5.3",
     "@types/proxyquire": "~1.3.28",
     "@types/stream-buffers": "~3.0.3",
-    "@types/which": "~2.0.0",
+    "@types/which": "~3.0.0",
     "anylogger": "~1.0.11",
     "anylogger-debug": "~1.0.3",
     "anylogger-loglevel": "~1.0.0",
@@ -80,6 +80,6 @@
     "ts-mockito": "~2.6.1",
     "typescript": "~5.0.4",
     "wait-for-expect": "~3.0.2",
-    "which": "~2.0.2"
+    "which": "~3.0.1"
   }
 }
