@@ -1704,10 +1704,10 @@ nginx-binaries@^0.6.1:
     node-fetch "^2.6.1"
     semver "^7.3.4"
 
-nginx-conf@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/nginx-conf/-/nginx-conf-2.0.0.tgz#a14a150ab1850b10691a50eff613cdef85f564b4"
-  integrity sha512-fHA8qHPW5FclhUJZUt4MO7E8P6Hg6jHb77I9yAjj18gYtOR4ubxonS1XlUoVMhopFggVSMP79BYc6V3i7H+k4Q==
+nginx-conf@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/nginx-conf/-/nginx-conf-2.1.0.tgz#eb5fa9dcae6af9a27c1d11179e21545531cc8026"
+  integrity sha512-tuf9hn1Zw+KFCjnLLNM9fxBC+OLxVZPSjcYK7PpwP6i0mt5UB7zLFQBjJKHIQDbs7D7uTcOHI4ELdtW/nUKllg==
 
 node-fetch@^2.6.1, node-fetch@~2.6.1:
   version "2.6.1"
