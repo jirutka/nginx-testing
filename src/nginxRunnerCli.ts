@@ -1,13 +1,14 @@
 import watch from 'node-watch'
 import * as parseArgs from 'minimist'
 import * as process from 'process'
-import { $INLINE_JSON } from 'ts-transformer-inline-file'
 
 import { arrify } from './internal/utils'
 import { log } from './logger'
 import { configPatch, startNginx, NginxOptions } from './nginxRunner'
 
-const { version: pkgVersion, bugs: bugsUrl } = $INLINE_JSON('../package.json')
+// TODO: Read from package.json.
+const pkgVersion = '0.3.0'
+const bugsUrl = 'https://github.com/jirutka/nginx-testing/issues'
 
 
 // TODO: Allow to set log level.
