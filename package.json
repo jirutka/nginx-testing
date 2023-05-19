@@ -68,7 +68,7 @@
     "debug": "~4.3.4",
     "dedent": "~0.7.0",
     "espower-typescript": "~10.0.1",
-    "loglevel": "~1.7.1",
+    "loglevel": "~1.8.1",
     "mocha": "~10.2.0",
     "mocha-each": "~2.0.1",
     "node-fetch": "~2.6.1",
