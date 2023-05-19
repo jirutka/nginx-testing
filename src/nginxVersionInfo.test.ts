@@ -23,7 +23,7 @@ describe('nginxVersionInfo', function () {
   test('when `<nginxPath> -V` exits with non-zero status', async () => {
     const binPath = `${__dirname}/../test/fixtures/fail`
 
-    try { await nginxVersionInfo(binPath) } catch (err) {
+    try { await nginxVersionInfo(binPath) } catch (err: any) {
       return assert(err.message === `Command failed with exit code 1: ${binPath} -V\nThis is error output`)
     }
     assert.fail('The function should throw, rather than completing.')

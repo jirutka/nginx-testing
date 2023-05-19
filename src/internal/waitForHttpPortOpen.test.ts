@@ -39,7 +39,7 @@ describe('waitForHttpPortOpen', function () {
     // Wait for a point on an address (I hope) does not exist.
     try {
       await waitForHttpPortOpen({ host: invalidHost, port }, 1_000)
-    } catch (err) {
+    } catch (err: any) {
       assert(err.code === 'ENOTFOUND')
       assert(err.message.includes(invalidHost))
       return

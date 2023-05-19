@@ -135,7 +135,7 @@ describe('startNginx', function () {
           test('rejects if master_process is off', async () => {
             try {
               await nginx.reload()
-            } catch (err) {
+            } catch (err: any) {
               return assert(err.message.includes('Nginx cannot be reloaded when master_process is off'))
             }
             assert.fail('The function should throw, rather than completing.')
@@ -245,7 +245,7 @@ describe('startNginx', function () {
 
     try {
       nginx = await startNginx({ binPath, config: 'daemon off;', ports: [], preferredPorts: [] })
-    } catch (err) {
+    } catch (err: any) {
       return assert(err.message.includes('No __PORT__ placeholder found'))
     }
     assert.fail('The function should throw, rather than completing.')
@@ -255,7 +255,7 @@ describe('startNginx', function () {
     const binPath = '/does/not/exist'
     try {
       await startNginx({ binPath, config })
-    } catch (err) {
+    } catch (err: any) {
       return assert(err.message.includes(binPath))
     }
     assert.fail('Expected the function to throw, rather than completing.')
