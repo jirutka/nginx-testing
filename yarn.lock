@@ -217,10 +217,10 @@
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
-"@logdna/tail-file@^2.0.5":
-  version "2.0.5"
-  resolved "https://registry.yarnpkg.com/@logdna/tail-file/-/tail-file-2.0.5.tgz#6169d1b2bb604e72fd6d90556bb2f7daa95b5c8b"
-  integrity sha512-IgtTWJgS/B1tIziD76C5YJQd5eOFZiOLARMzw7CYYen/R+kp+SQfTsUx4KmWvV33YXciwlI5x8qcBfdp0sd1rA==
+"@logdna/tail-file@^3.0.1":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@logdna/tail-file/-/tail-file-3.0.1.tgz#7d9b05673fe4eb5874e1515ceb49a8ff79e7d8a0"
+  integrity sha512-c7Ve4yYM/aHzYb9njTP/mdZtw4MAD+On/1I1XhvfrWUHud2XZ1KyhKnWRNXfbJHuHMtcL2GIjQ8V4a/yb4hygw==
 
 "@tsconfig/node10@^1.0.7":
   version "1.0.9"
