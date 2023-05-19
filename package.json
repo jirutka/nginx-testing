@@ -47,7 +47,7 @@
     "minimist": "^1.2.8",
     "nginx-binaries": "^0.6.1",
     "nginx-conf": "^2.1.0",
-    "node-watch": "^0.7.1",
+    "node-watch": "^0.7.3",
     "stream-buffers": "^3.0.2"
   },
   "devDependencies": {
