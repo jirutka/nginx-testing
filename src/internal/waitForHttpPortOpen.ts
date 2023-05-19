@@ -25,7 +25,7 @@ export const waitForHttpPortOpen = (
   const expectedErrorCodes = ['ECONNREFUSED', 'ECONNTIMEOUT', 'ECONNRESET']
   const startTime = Date.now()
 
-  const loop = () => {
+  const loop = (): Promise<void | NodeJS.Timeout> => {
     log.debug(`Trying to connect ${JSON.stringify(requestOpts)}`)
 
     return checkHttpWithTimeout(requestOpts, timeoutMsec)

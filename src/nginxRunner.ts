@@ -364,7 +364,7 @@ export async function startNginx (opts: NginxOptions): Promise<NginxServer> {
 
     return {
       get config () { return config },
-      get pid () { return ngxProcess.pid },
+      get pid () { return ngxProcess.pid! },
       ports,
       port: ports[0]!,
       workDir,
@@ -397,7 +397,7 @@ export async function startNginx (opts: NginxOptions): Promise<NginxServer> {
         await updateConfigIfDefined(opts)
 
         log.debug('Sending SIGHUP to nginx process')
-        process.kill(ngxProcess.pid, 'SIGHUP')
+        process.kill(ngxProcess.pid!, 'SIGHUP')
       },
       restart: async (opts = {}) => {
         log.info(`Restarting nginx`)
