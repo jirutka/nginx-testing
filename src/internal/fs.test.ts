@@ -1,4 +1,4 @@
-import * as nodeFS from 'fs'
+import * as nodeFS from 'node:fs'
 import { describe, test } from 'mocha'
 
 import '../../test/helper'

@@ -1,7 +1,7 @@
-import * as OS from 'os'
-import * as path from 'path'
-import * as process from 'process'
-import { EventEmitter, Writable } from 'stream'
+import * as OS from 'node:os'
+import * as path from 'node:path'
+import * as process from 'node:process'
+import { EventEmitter, Writable } from 'node:stream'
 
 import * as TailFile from '@logdna/tail-file'
 import * as execa from 'execa'

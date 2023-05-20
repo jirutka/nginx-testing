@@ -1,6 +1,6 @@
-import * as OS from 'os'
-import * as path from 'path'
-import * as process from 'process'
+import * as OS from 'node:os'
+import * as path from 'node:path'
+import * as process from 'node:process'
 
 import * as FS from './fs'
 

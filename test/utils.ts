@@ -1,6 +1,6 @@
 import { AssertionError } from 'assert'
-import * as FS from 'fs'
-import * as process from 'process'
+import * as FS from 'node:fs'
+import * as process from 'node:process'
 import waitForExpect from 'wait-for-expect'
 
 
