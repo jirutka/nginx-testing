@@ -34,8 +34,8 @@ jobs:
         uses: engineerd/configurator@v0.0.10
         with:
           name: nginx.exe
-          url: http://nginx.org/download/nginx-1.18.0.zip
-          pathInArchive: nginx-1.18.0/nginx.exe
+          url: https://nginx.org/download/nginx-1.22.0.zip
+          pathInArchive: nginx-1.22.0/nginx.exe
 
       - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3

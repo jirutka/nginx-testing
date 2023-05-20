@@ -53,7 +53,7 @@ describe('startNginx', function () {
     nginx && await nginx.stop()
   })
 
-  ;['system', '1.18.x', '1.19.x'].forEach(version => {
+  ;['system', '1.22.x', '1.24.x'].forEach(version => {
     describe(`with nginx ${version}`, () => {
       let binPath: string
 
