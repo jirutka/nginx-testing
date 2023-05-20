@@ -6,9 +6,9 @@ import { arrify } from './internal/utils'
 import { log } from './logger'
 import { configPatch, startNginx, NginxOptions } from './nginxRunner'
 
-// TODO: Read from package.json.
-const pkgVersion = '0.3.0'
-const bugsUrl = 'https://github.com/jirutka/nginx-testing/issues'
+// XXX: This is a hack to import package.json without ending up with lib/src/.
+type PackageJson = { version: string, bugs: string }
+const { version: pkgVersion, bugs: bugsUrl } = require('../package.json') as PackageJson
 
 
 // TODO: Allow to set log level.
