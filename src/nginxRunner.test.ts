@@ -1,10 +1,11 @@
+import * as OS from 'node:os'
+import * as path from 'node:path'
+
 import { AssertionError } from 'assert'
 import * as dedent from 'dedent'
 import { afterEach, describe, test } from 'mocha'
 import { NginxBinary } from 'nginx-binaries'
 import fetch from 'node-fetch'
-import * as OS from 'node:os'
-import * as path from 'node:path'
 import { anything, spy, reset, when } from 'ts-mockito'
 import { sync as which } from 'which'
 

@@ -1,6 +1,7 @@
 import * as FS from 'node:fs'
-import { describe, test } from 'mocha'
 import { basename, dirname, join as joinPath } from 'node:path'
+
+import { describe, test } from 'mocha'
 
 import '../../test/helper'
 import { isDirectory } from '../../test/utils'

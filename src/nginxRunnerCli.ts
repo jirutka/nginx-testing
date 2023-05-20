@@ -1,6 +1,7 @@
+import * as process from 'node:process'
+
 import watch from 'node-watch'
 import * as parseArgs from 'minimist'
-import * as process from 'node:process'
 
 import { arrify } from './internal/utils'
 import { log } from './logger'
