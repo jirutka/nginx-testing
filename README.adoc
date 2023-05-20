@@ -51,7 +51,7 @@ import fetch from 'node-fetch'
 let nginx: NginxServer
 
 before(async () => {
-  nginx = await startNginx({ version: '1.18.x', configPath: './nginx.conf' })
+  nginx = await startNginx({ version: '1.24.x', configPath: './nginx.conf' })
 })
 
 after(async () => {
@@ -119,7 +119,7 @@ import fetch from 'node-fetch'
 let nginx: NginxServer
 
 before(async () => {
-  nginx = await startNginx({ version: '1.18.x', configPath: './nginx.conf' })
+  nginx = await startNginx({ version: '1.24.x', configPath: './nginx.conf' })
 })
 after(nginx.stop)
 
@@ -319,7 +319,7 @@ Stops the nginx and cleans-up temporary files and directories.
 Parsed output of `nginx -V` returned by <<nginxVersionInfo, `nginxVersionInfo()`>>.
 
 version `(string)`::
-Nginx version number (e.g. `'1.18.0'`).
+Nginx version number (e.g. `'1.24.0'`).
 
 modules `(Object.<string, string>)`::
 An object of module names as properties with value `'with'`, `'with-dynamic'`, or `'without'`.

@@ -9,7 +9,7 @@ import { log } from './logger'
 // NOTE: Keep in sync with API section in README.adoc (until I figure out how to generate it).
 export interface NginxVersionInfo {
   /**
-   * Nginx version number (e.g. `'1.18.0'`).
+   * Nginx version number (e.g. `'1.24.0'`).
    */
   version: string
   /**

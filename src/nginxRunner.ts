@@ -267,7 +267,7 @@ type RestartOptions = Pick<BaseOptions, 'config' | 'configPath'>
  * let nginx: NginxServer
  *
  * before(async () => {
- *   nginx = await startNginx({ version: '1.18.x', configPath: './nginx.conf' })
+ *   nginx = await startNginx({ version: '1.24.x', configPath: './nginx.conf' })
  * })
  * after(nginx.stop)
  *
