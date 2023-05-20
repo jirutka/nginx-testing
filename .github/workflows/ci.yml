@@ -11,14 +11,14 @@ jobs:
           - ubuntu-latest
           - windows-latest
         node-version:
-          - 14
-          - 15
+          - 18
+          - 20
         continue-on-error: [false]
         include:
           # macOS runners are unstable.
-          - { os: macos-latest, node-version: 14, continue-on-error: true }
-          - { os: macos-latest, node-version: 15, continue-on-error: true }
-          - { os: ubuntu-18.04, node-version: 14, continue-on-error: false }
+          - { os: macos-latest, node-version: 18, continue-on-error: true }
+          - { os: macos-latest, node-version: 20, continue-on-error: true }
+          - { os: ubuntu-20.04, node-version: 14, continue-on-error: true }
     continue-on-error: ${{ matrix.continue-on-error }}
     runs-on: ${{ matrix.os }}
     steps:
@@ -58,7 +58,7 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 20
           registry-url: https://registry.npmjs.org
 
       - run: yarn install --frozen-lockfile
