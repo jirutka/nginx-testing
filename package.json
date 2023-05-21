@@ -19,6 +19,7 @@
   "bin": {
     "start-nginx": "bin/start-nginx"
   },
+  "type": "commonjs",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "files": [
