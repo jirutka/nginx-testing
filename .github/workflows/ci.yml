@@ -13,8 +13,9 @@ jobs:
           - macos-latest
           - windows-latest
         node-version:
-          - 18
-          - 20
+          - lts/-1
+          - lts/*
+          - latest
         continue-on-error: [false]
         include:
           - { os: ubuntu-20.04, node-version: 14, continue-on-error: true }
