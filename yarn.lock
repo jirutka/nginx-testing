@@ -1731,12 +1731,12 @@ next-tick@^1.1.0:
   resolved "https://registry.yarnpkg.com/next-tick/-/next-tick-1.1.0.tgz#1836ee30ad56d67ef281b22bd199f709449b35eb"
   integrity sha512-CXdUiJembsNjuToQvxayPZF9Vqht7hewsvy2sOWafLvi2awflj9mOC6bHIg50orX8IJvWKY9wYQ/zB2kogPslQ==
 
-nginx-binaries@^0.6.1:
-  version "0.6.1"
-  resolved "https://registry.yarnpkg.com/nginx-binaries/-/nginx-binaries-0.6.1.tgz#f70e83d1e760ec4250edde192a846793d98f9a15"
-  integrity sha512-5lk+CpYkrD1mEBRph36thwFI/jinOfnKbzkJTs1cBulRWH0Mq6qvdxAWe3aQE6beTC8lmy+wwHZ1Vh2Q4uZNXA==
+nginx-binaries@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/nginx-binaries/-/nginx-binaries-0.7.0.tgz#241fd5af3e212652ffce161ddf5ff2c38af3fb2e"
+  integrity sha512-h1NfcBaQ0dbmm8lp1o9mPlE/eFIOGyICuwWZuRpJXVNQOlXXtZT5HbGpnoj2x9IwWpRk+Xv0dBX36dM8NkKUYQ==
   dependencies:
-    node-fetch "^2.6.1"
+    node-fetch "^2.6.11"
     semver "^7.3.4"
 
 nginx-conf@^2.1.0:
@@ -1744,7 +1744,7 @@ nginx-conf@^2.1.0:
   resolved "https://registry.yarnpkg.com/nginx-conf/-/nginx-conf-2.1.0.tgz#eb5fa9dcae6af9a27c1d11179e21545531cc8026"
   integrity sha512-tuf9hn1Zw+KFCjnLLNM9fxBC+OLxVZPSjcYK7PpwP6i0mt5UB7zLFQBjJKHIQDbs7D7uTcOHI4ELdtW/nUKllg==
 
-node-fetch@^2.6.1, node-fetch@~2.6.1:
+node-fetch@^2.6.11, node-fetch@~2.6.1:
   version "2.6.11"
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.11.tgz#cde7fc71deef3131ef80a738919f999e6edfff25"
   integrity sha512-4I6pdBY1EthSqDmJkiNk3JIT8cswwR9nfeW/cPdUagJYEQG7R95WRH74wpz7ma8Gh/9dI9FP+OU+0E4FvtA55w==

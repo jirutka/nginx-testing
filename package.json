@@ -45,7 +45,7 @@
     "execa": "^5.0.0",
     "get-port": "^5.1.1",
     "minimist": "^1.2.8",
-    "nginx-binaries": "^0.6.1",
+    "nginx-binaries": "^0.7.0",
     "nginx-conf": "^2.1.0",
     "node-watch": "^0.7.3",
     "stream-buffers": "^3.0.2"
